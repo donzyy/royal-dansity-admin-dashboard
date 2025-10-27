@@ -6,13 +6,17 @@ dist/
 
 # Environment variables
 *.env
-*.env.*
 .env
 .env.local
 .env.production
+.env.development
 .env.development.local
 .env.test.local
 .env.production.local
+
+# Allow example files to be committed
+!.env.example
+!*.env.example
 
 # Logs
 logs/
