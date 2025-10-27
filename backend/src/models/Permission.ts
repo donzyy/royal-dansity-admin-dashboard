@@ -4,7 +4,7 @@ export interface IPermission extends Document {
   name: string;
   slug: string;
   description: string;
-  category: 'dashboard' | 'users' | 'content' | 'analytics' | 'settings';
+  category: string;
   createdAt: Date;
 }
 
@@ -29,8 +29,8 @@ const PermissionSchema: Schema<IPermission> = new Schema(
     },
     category: {
       type: String,
-      enum: ['dashboard', 'users', 'content', 'analytics', 'settings'],
       required: true,
+      trim: true,
     },
   },
   {
