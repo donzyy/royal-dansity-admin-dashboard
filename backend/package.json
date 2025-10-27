@@ -1,0 +1,48 @@
+{
+  "name": "royal-dansity-backend",
+  "version": "1.0.0",
+  "description": "Royal Dansity Backend API",
+  "type": "module",
+  "main": "dist/index.js",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "seed": "tsx src/scripts/seed.ts",
+    "seed:permissions": "tsx src/scripts/seedPermissions.ts",
+    "seed:roles": "tsx src/scripts/seedRoles.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@types/multer": "^2.0.0",
+    "@types/nodemailer": "^7.0.2",
+    "bcryptjs": "^3.0.2",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.1",
+    "express": "^5.1.0",
+    "express-rate-limit": "^8.1.0",
+    "express-validator": "^7.2.1",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.19.2",
+    "morgan": "^1.10.0",
+    "multer": "^2.0.2",
+    "nodemailer": "^7.0.10",
+    "socket.io": "^4.8.1",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^5.0.1",
+    "winston": "^3.18.0",
+    "zod": "^3.25.76"
+  },
+  "devDependencies": {
+    "@types/bcryptjs": "^2.4.6",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.3",
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/morgan": "^1.9.9",
+    "@types/node": "^24.2.1",
+    "@types/swagger-jsdoc": "^6.0.4",
+    "@types/swagger-ui-express": "^4.1.6",
+    "tsx": "^4.20.3",
+    "typescript": "^5.9.2"
+  }
+}
