@@ -1,6 +1,6 @@
 # Technical Documentation
 
-> Comprehensive technical documentation for Royal Dansity Investments International platform
+> Comprehensive technical documentation for Your Company Name International platform
 
 ---
 
@@ -568,7 +568,7 @@ Subject: Welcome to Royal Dansity
 
 Hi [Name],
 
-Welcome to Royal Dansity Investments International!
+Welcome to Your Company Name International!
 
 Your account has been created successfully.
 

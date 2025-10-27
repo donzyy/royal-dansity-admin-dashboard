@@ -35,7 +35,7 @@ git status
 2. Click the **"+"** icon (top right) → **"New repository"**
 3. Fill in:
    - **Repository name**: `royal-dansity-admin-dashboard` (or your preferred name)
-   - **Description**: "Full-stack admin dashboard for Royal Dansity Investments"
+   - **Description**: "Full-stack admin dashboard for Your Company Name"
    - **Visibility**: Choose **Private** (recommended) or Public
    - **DO NOT** initialize with README, .gitignore, or license (we already have them)
 4. Click **"Create repository"**

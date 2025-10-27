@@ -1,6 +1,6 @@
-# Royal Dansity Investments International
+# Your Company Name International
 
-> A modern, full-stack web application with admin dashboard for Royal Dansity Investments International. Built with React, TypeScript, Express, MongoDB, and Socket.IO.
+> A modern, full-stack web application with admin dashboard for Your Company Name International. Built with React, TypeScript, Express, MongoDB, and Socket.IO.
 
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
 ![Node](https://img.shields.io/badge/node-%3E%3D18.0.0-brightgreen.svg)
@@ -27,7 +27,7 @@
 
 ## 🌟 Overview
 
-Royal Dansity Investments International is a comprehensive web platform featuring:
+Your Company Name International is a comprehensive web platform featuring:
 - **Public Website**: Showcase services, news, and company information
 - **Admin Dashboard**: Manage content, users, messages, analytics, and more
 - **Real-time Updates**: Socket.IO integration for live data synchronization
@@ -454,6 +454,6 @@ For support, email info@royaldansityinvestmnts.com.gh or open an issue on GitHub
 
 ---
 
-**Made with 💛 for Royal Dansity Investments International**
+**Made with 💛 for Your Company Name International**
 
 

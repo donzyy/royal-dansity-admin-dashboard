@@ -1,4 +1,4 @@
-# 🪟 Windows Server Deployment Guide - Royal Dansity Investments
+# 🪟 Windows Server Deployment Guide - Your Company Name
 
 Complete guide for deploying to Windows Server with Nginx and subdomain architecture.
 
@@ -7,11 +7,11 @@ Complete guide for deploying to Windows Server with Nginx and subdomain architec
 ## 🎯 **Your Architecture**
 
 ```
-Main Website & Admin:  https://royaldansityinvestments.com.gh
-                       https://www.royaldansityinvestments.com.gh
+Main Website & Admin:  https://yourdomain.com
+                       https://www.yourdomain.com
                        (Serves both public pages AND /admin routes)
 
-API Backend:           https://api.royaldansityinvestments.com.gh
+API Backend:           https://api.yourdomain.com
                        (Express backend on port 5001)
 ```
 
@@ -78,16 +78,16 @@ JWT_EXPIRES_IN=15m
 JWT_REFRESH_EXPIRES_IN=7d
 
 # CORS - Allow your main domain
-CORS_ORIGIN=https://royaldansityinvestments.com.gh,https://www.royaldansityinvestments.com.gh,https://api.royaldansityinvestments.com.gh
+CORS_ORIGIN=https://yourdomain.com,https://www.yourdomain.com,https://api.yourdomain.com
 
 # Frontend URL
-FRONTEND_URL=https://royaldansityinvestments.com.gh
+FRONTEND_URL=https://yourdomain.com
 
 # Email Configuration
 EMAIL_SERVICE=sendgrid
 SENDGRID_API_KEY=your-sendgrid-api-key
-EMAIL_FROM=noreply@royaldansityinvestments.com.gh
-EMAIL_FROM_NAME=Royal Dansity Investments
+EMAIL_FROM=noreply@yourdomain.com
+EMAIL_FROM_NAME=Your Company Name
 
 # File Uploads
 MAX_FILE_SIZE=10485760
@@ -105,7 +105,7 @@ RATE_LIMIT_WINDOW_MS=900000
 RATE_LIMIT_MAX_REQUESTS=50
 
 # Admin
-ADMIN_EMAIL=admin@royaldansityinvestments.com.gh
+ADMIN_EMAIL=admin@yourdomain.com
 ADMIN_PASSWORD=YOUR_SECURE_PASSWORD
 ```
 
@@ -119,9 +119,9 @@ notepad .env.production
 **Paste:**
 ```env
 # Point to your API subdomain
-VITE_API_URL=https://api.royaldansityinvestments.com.gh/api
-VITE_SOCKET_URL=https://api.royaldansityinvestments.com.gh
-VITE_APP_NAME="Royal Dansity Investments"
+VITE_API_URL=https://api.yourdomain.com/api
+VITE_SOCKET_URL=https://api.yourdomain.com
+VITE_APP_NAME="Your Company Name"
 ```
 
 ---
@@ -157,7 +157,7 @@ npm run seed
 This creates:
 - Default permissions
 - Default roles (Admin, Editor, Viewer, etc.)
-- Default admin user: `admin@royaldansityinvestments.com.gh` / Your password
+- Default admin user: `admin@yourdomain.com` / Your password
 
 ---
 
@@ -208,10 +208,10 @@ Your current config at `C:\nginx\conf\nginx.conf` (or sites-available):
 # This is already correct! ✅
 server {
     listen 443 ssl;
-    server_name royaldansityinvestments.com.gh www.royaldansityinvestments.com.gh;
+    server_name yourdomain.com www.yourdomain.com;
 
     ssl_certificate C:/nginx/ssl/Royaldansityinvestments_com.gh/fullchain.pem;
-    ssl_certificate_key C:/nginx/ssl/Royaldansityinvestments_com.gh/__royaldansityinvestments.com.gh-PrivateKey.pem;
+    ssl_certificate_key C:/nginx/ssl/Royaldansityinvestments_com.gh/__yourdomain.com-PrivateKey.pem;
 
     ssl_protocols TLSv1.2 TLSv1.3;
     ssl_ciphers 'TLS_AES_128_GCM_SHA256:TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384';
@@ -247,15 +247,15 @@ server {
 # HTTP to HTTPS redirect
 server {
     listen 80;
-    server_name royaldansityinvestments.com.gh www.royaldansityinvestments.com.gh;
+    server_name yourdomain.com www.yourdomain.com;
     return 301 https://$host$request_uri;
 }
 
 # Redirect .com to .com.gh
 server {
     listen 80;
-    server_name royaldansityinvestments.com www.royaldansityinvestments.com;
-    return 301 https://royaldansityinvestments.com.gh$request_uri;
+    server_name yourdomain.com www.yourdomain.com;
+    return 301 https://yourdomain.com$request_uri;
 }
 ```
 
@@ -264,14 +264,14 @@ server {
 Add this NEW server block to your Nginx config:
 
 ```nginx
-# API Subdomain - api.royaldansityinvestments.com.gh
+# API Subdomain - api.yourdomain.com
 server {
     listen 443 ssl;
-    server_name api.royaldansityinvestments.com.gh;
+    server_name api.yourdomain.com;
 
     # Use your wildcard SSL certificate (same as main domain)
     ssl_certificate C:/nginx/ssl/Royaldansityinvestments_com.gh/fullchain.pem;
-    ssl_certificate_key C:/nginx/ssl/Royaldansityinvestments_com.gh/__royaldansityinvestments.com.gh-PrivateKey.pem;
+    ssl_certificate_key C:/nginx/ssl/Royaldansityinvestments_com.gh/__yourdomain.com-PrivateKey.pem;
 
     ssl_protocols TLSv1.2 TLSv1.3;
     ssl_ciphers 'TLS_AES_128_GCM_SHA256:TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384';
@@ -332,7 +332,7 @@ server {
 # Redirect HTTP to HTTPS for API subdomain
 server {
     listen 80;
-    server_name api.royaldansityinvestments.com.gh;
+    server_name api.yourdomain.com;
     return 301 https://$host$request_uri;
 }
 ```
@@ -346,9 +346,9 @@ import cors from 'cors';
 
 // Allow multiple origins
 const allowedOrigins = [
-  'https://royaldansityinvestments.com.gh',
-  'https://www.royaldansityinvestments.com.gh',
-  'https://api.royaldansityinvestments.com.gh',
+  'https://yourdomain.com',
+  'https://www.yourdomain.com',
+  'https://api.yourdomain.com',
   'http://localhost:5173', // Development
 ];
 
@@ -411,7 +411,7 @@ nslookup api.yourdomain.com
 curl http://localhost:5001/api/ping
 
 # Test through API subdomain
-curl https://api.royaldansityinvestments.com.gh/api/ping
+curl https://api.yourdomain.com/api/ping
 ```
 
 Both should return: `{"message":"pong"}`
@@ -537,9 +537,9 @@ pm2 restart royaldansity-api
 ```typescript
 // Make sure backend CORS includes all origins:
 const allowedOrigins = [
-  'https://royaldansityinvestments.com.gh',
-  'https://www.royaldansityinvestments.com.gh',
-  'https://api.royaldansityinvestments.com.gh',
+  'https://yourdomain.com',
+  'https://www.yourdomain.com',
+  'https://api.yourdomain.com',
 ];
 ```
 
@@ -623,10 +623,10 @@ git log --oneline -5
 ✅ **Windows Server** - Optimized for your environment  
 
 ### Your URLs:
-- **Public Website**: https://royaldansityinvestments.com.gh
-- **Admin Dashboard**: https://royaldansityinvestments.com.gh/admin
-- **API Backend**: https://api.royaldansityinvestments.com.gh
-- **API Docs**: https://api.royaldansityinvestments.com.gh/api-docs (if enabled)
+- **Public Website**: https://yourdomain.com
+- **Admin Dashboard**: https://yourdomain.com/admin
+- **API Backend**: https://api.yourdomain.com
+- **API Docs**: https://api.yourdomain.com/api-docs (if enabled)
 
 **Everything is documented and ready for deployment!** 🚀
 
