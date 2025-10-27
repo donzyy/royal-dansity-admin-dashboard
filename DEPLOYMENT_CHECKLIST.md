@@ -102,7 +102,7 @@ npm install
 ```env
 NODE_ENV=production
 PORT=5001
-MONGODB_URI=mongodb+srv://user:pass@cluster.mongodb.net/royaldansity
+MONGODB_URI=mongodb+srv://YOUR_USERNAME:YOUR_PASSWORD@YOUR_CLUSTER.mongodb.net/royaldansity
 JWT_SECRET=<generate-64-char-string>
 JWT_REFRESH_SECRET=<generate-different-64-char-string>
 CORS_ORIGIN=https://yourdomain.com

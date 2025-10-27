@@ -1,6 +1,7 @@
 # Royal Dansity Backend API
 User-agent: *
 Disallow: /api/
-Allow: /api-docs/
+Disallow: /api-docs/
+Disallow: /admin/
 
 

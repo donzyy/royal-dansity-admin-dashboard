@@ -1,14 +1,10 @@
-User-agent: Googlebot
-Allow: /
-
-User-agent: Bingbot
-Allow: /
-
-User-agent: Twitterbot
-Allow: /
-
-User-agent: facebookexternalhit
-Allow: /
-
+# Royal Dansity - Public Website
 User-agent: *
+
+# Disallow admin, API, and API documentation
+Disallow: /admin/
+Disallow: /api/
+Disallow: /api-docs/
+
+# Allow public pages (everything else)
 Allow: /
