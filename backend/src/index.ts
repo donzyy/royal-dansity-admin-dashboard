@@ -34,9 +34,14 @@ const PORT = process.env.PORT || 5001;
 /**
  * Initialize Socket.IO
  */
+// Parse CORS_ORIGIN for Socket.IO
+const socketCorsOrigins = process.env.CORS_ORIGIN 
+  ? process.env.CORS_ORIGIN.split(',').map(origin => origin.trim())
+  : ['http://localhost:5173'];
+
 export const io = new SocketIOServer(httpServer, {
   cors: {
-    origin: process.env.CORS_ORIGIN || 'http://localhost:5173',
+    origin: socketCorsOrigins,
     credentials: true,
   },
 });
@@ -57,8 +62,13 @@ connectDB();
 /**
  * Middleware Configuration
  */
+// Parse CORS_ORIGIN - can be comma-separated or single value
+const corsOrigins = process.env.CORS_ORIGIN 
+  ? process.env.CORS_ORIGIN.split(',').map(origin => origin.trim())
+  : ['http://localhost:5173'];
+
 app.use(cors({
-  origin: process.env.CORS_ORIGIN || 'http://localhost:5173',
+  origin: corsOrigins,
   credentials: true,
 }));
 app.use(express.json({ limit: '10mb' }));
