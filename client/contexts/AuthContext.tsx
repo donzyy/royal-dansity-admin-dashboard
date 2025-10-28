@@ -1,9 +1,7 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
-
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5001';
+import { authAPI, setTokens as setApiTokens, clearTokens as clearApiTokens } from '@/lib/api';
 
 interface User {
   id: string;
@@ -42,9 +40,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     if (token && storedUser) {
       setAccessToken(token);
       setUser(JSON.parse(storedUser));
-      
-      // Set default axios header
-      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
     }
     
     setLoading(false);
@@ -52,25 +47,18 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const login = async (email: string, password: string) => {
     try {
-      const response = await axios.post(`${API_URL}/api/auth/login`, {
-        email,
-        password,
-      });
+      const response = await authAPI.login({ email, password });
 
-      if (response.data.success) {
-        const { user: userData, accessToken: token, refreshToken } = response.data.data;
+      if (response.success) {
+        const { user: userData, accessToken: token, refreshToken } = response.data;
 
         // Store in state
         setUser(userData);
         setAccessToken(token);
 
-        // Store in localStorage
-        localStorage.setItem('accessToken', token);
-        localStorage.setItem('refreshToken', refreshToken);
+        // Store in localStorage and API client
         localStorage.setItem('user', JSON.stringify(userData));
-
-        // Set default axios header
-        axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+        setApiTokens(token, refreshToken);
 
         // Show success toast
         toast.success(`Welcome back, ${userData.name}!`, {
@@ -125,15 +113,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setAccessToken(null);
 
     // Clear ALL localStorage items to prevent data leakage
-    localStorage.removeItem('accessToken');
-    localStorage.removeItem('refreshToken');
     localStorage.removeItem('user');
     localStorage.removeItem('token'); // Also remove 'token' if it exists
     localStorage.removeItem('userSettings'); // Clear account settings
     localStorage.removeItem('accountSettingsTab'); // Clear tab preference
-
-    // Clear axios header
-    delete axios.defaults.headers.common['Authorization'];
+    clearApiTokens();
 
     // Show toast
     toast.success('Logged out successfully', {
@@ -155,9 +139,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const refreshUser = async () => {
     try {
-      const response = await axios.get(`${API_URL}/api/auth/me`);
-      if (response.data.success) {
-        const userData = response.data.data.user;
+      const response = await authAPI.getCurrentUser();
+      if (response.success) {
+        const userData = response.data!.user;
         setUser(userData);
         localStorage.setItem('user', JSON.stringify(userData));
       }

@@ -99,8 +99,14 @@ export default function AdminUserDetail() {
       }
     } catch (error: any) {
       console.error('Error fetching user:', error);
-      if (error.message?.includes('404')) {
+      // Check for 404 in multiple ways
+      if (
+        error.message?.includes('404') || 
+        error.message?.includes('Not Found') ||
+        error.response?.status === 404
+      ) {
         setNotFound(true);
+        toast.error('User not found');
       } else {
         toast.error('Failed to load user data');
       }
