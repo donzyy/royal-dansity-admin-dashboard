@@ -398,7 +398,9 @@ For complete API reference, see Swagger documentation.
 After seeding the database:
 
 - **Email**: `admin@royaldansity.com`
-- **Password**: `Admin@123!`
+- **Password**: `Admin@123`
+
+⚠️ **Important**: Change these credentials immediately after first login!
 
 ⚠️ **IMPORTANT**: Change this password immediately after first login!
 

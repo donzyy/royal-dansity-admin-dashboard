@@ -7,7 +7,7 @@ import DashboardNotFound from "@/dashboard/components/DashboardNotFound";
 import { LoadingSpinner } from "@/dashboard/components";
 import { usersAPI, activitiesAPI, rolesAPI } from "@/lib/api";
 
-const API_URL = 'http://localhost:5001';
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5001';
 
 const getFullImageUrl = (path: string | undefined): string => {
   if (!path) return '';

@@ -5,7 +5,7 @@ import AdminLayout from "@/dashboard/components/AdminLayout";
 import { authAPI } from "@/lib/api";
 import { useAuth } from "@/contexts/AuthContext";
 
-const API_URL = 'http://localhost:5001';
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5001';
 
 const getFullImageUrl = (path: string | undefined): string => {
   if (!path) return '';
@@ -110,7 +110,7 @@ export default function UserProfile() {
         throw new Error('User ID not found');
       }
 
-      const response = await fetch(`http://localhost:5001/api/users/${userId}/avatar`, {
+      const response = await fetch(`${API_URL}/api/users/${userId}/avatar`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,

@@ -23,8 +23,9 @@ export default function ExportButton({
       setIsExporting(true);
 
       // Build query string from params
+      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5001';
       const queryString = new URLSearchParams(params).toString();
-      const url = `http://localhost:5001/api/${endpoint}${
+      const url = `${API_URL}/api/${endpoint}${
         queryString ? `?${queryString}` : ""
       }`;
 

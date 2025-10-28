@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-hot-toast";
 import { io, Socket } from "socket.io-client";
 
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5001';
+
 interface Notification {
   _id: string;
   type: string;
@@ -44,7 +46,8 @@ export default function NotificationBell() {
   }, []);
 
   const setupSocketConnection = () => {
-    const socket = io("http://localhost:5001", {
+    const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || 'http://localhost:5001';
+    const socket = io(SOCKET_URL, {
       auth: {
         token: localStorage.getItem("accessToken"),
       },
@@ -62,7 +65,7 @@ export default function NotificationBell() {
   const fetchNotifications = async () => {
     try {
       setLoading(true);
-      const response = await fetch("http://localhost:5001/api/notifications?limit=10", {
+      const response = await fetch(`${API_URL}/api/notifications?limit=10`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
         },
@@ -82,7 +85,7 @@ export default function NotificationBell() {
 
   const markAsRead = async (id: string) => {
     try {
-      await fetch(`http://localhost:5001/api/notifications/${id}/read`, {
+      await fetch(`${API_URL}/api/notifications/${id}/read`, {
         method: "PUT",
         headers: {
           Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
@@ -102,7 +105,7 @@ export default function NotificationBell() {
 
   const markAllAsRead = async () => {
     try {
-      await fetch("http://localhost:5001/api/notifications/read-all", {
+      await fetch(`${API_URL}/api/notifications/read-all`, {
         method: "PUT",
         headers: {
           Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
