@@ -142,12 +142,11 @@ async function seedDefaultAdmin() {
     }
     
     // Create default admin
-    const hashedPassword = await bcrypt.hash('Admin@123', 10);
-    
+    // Note: Don't hash here - the User model's pre-save hook will hash it
     await User.create({
       name: 'Admin User',
       email: 'admin@royaldansity.com',
-      password: hashedPassword,
+      password: 'Admin@123',  // Plain password - will be hashed by pre-save hook
       role: 'admin',
       status: 'active',
     });
