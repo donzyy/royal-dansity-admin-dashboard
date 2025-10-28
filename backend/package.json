@@ -11,6 +11,7 @@
     "seed": "tsx src/scripts/seed.ts",
     "seed:permissions": "tsx src/scripts/seedPermissions.ts",
     "seed:roles": "tsx src/scripts/seedRoles.ts",
+    "cleanup": "tsx src/scripts/cleanupOrphanedFiles.ts",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {

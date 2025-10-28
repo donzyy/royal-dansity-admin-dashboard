@@ -4,6 +4,7 @@ import Activity from '../models/Activity';
 import { AppError, asyncHandler } from '../middleware/errorHandler';
 import { logger } from '../utils/logger';
 import { io } from '../index';
+import { deleteFile } from '../utils/fileCleanup';
 
 /**
  * Carousel Controller
@@ -229,6 +230,12 @@ export const deleteCarouselSlide = asyncHandler(
 
     const slideTitle = slide.title;
     const slideId = slide._id.toString();
+    
+    // Delete associated image from filesystem
+    if (slide.image) {
+      deleteFile(slide.image);
+    }
+    
     await slide.deleteOne();
 
     // Emit Socket.IO event

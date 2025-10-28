@@ -4,6 +4,7 @@ import Activity from '../models/Activity';
 import { AppError, asyncHandler } from '../middleware/errorHandler';
 import { logger } from '../utils/logger';
 import { io } from '../index';
+import { deleteFile, deleteFiles } from '../utils/fileCleanup';
 import { sendCSVResponse, flattenForCSV } from '../utils/csvExport';
 
 /**
@@ -238,6 +239,18 @@ export const deleteArticle = asyncHandler(
 
     const articleTitle = article.title;
     const articleId = article._id.toString();
+    
+    // Delete associated images from filesystem
+    const imagesToDelete: string[] = [];
+    if (article.image) imagesToDelete.push(article.image);
+    if (article.additionalImages && article.additionalImages.length > 0) {
+      imagesToDelete.push(...article.additionalImages);
+    }
+    
+    if (imagesToDelete.length > 0) {
+      deleteFiles(imagesToDelete);
+    }
+    
     await article.deleteOne();
 
     // Emit Socket.IO event

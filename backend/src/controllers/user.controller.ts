@@ -3,6 +3,7 @@ import User from '../models/User';
 import Activity from '../models/Activity';
 import { AppError, asyncHandler } from '../middleware/errorHandler';
 import { logger } from '../utils/logger';
+import { deleteFile } from '../utils/fileCleanup';
 import { sendCSVResponse, flattenForCSV } from '../utils/csvExport';
 
 /**
@@ -197,6 +198,12 @@ export const deleteUser = asyncHandler(
     }
 
     const userEmail = user.email;
+    
+    // Delete user's avatar from filesystem
+    if (user.avatar) {
+      deleteFile(user.avatar);
+    }
+    
     await user.deleteOne();
 
     // Log activity
