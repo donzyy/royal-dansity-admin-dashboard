@@ -19,7 +19,9 @@ import type {
  * Centralized API communication with the backend
  */
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || '/api';
+const API_BASE_URL = import.meta.env.VITE_API_URL 
+  ? `${import.meta.env.VITE_API_URL}/api`
+  : '/api';
 
 // Token management
 let accessToken: string | null = localStorage.getItem('accessToken');
