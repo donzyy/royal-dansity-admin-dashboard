@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import axios from "axios";
+import axios from "@/lib/axios";
 import AdminLayout from "@/dashboard/components/AdminLayout";
 import { useAuth } from "@/contexts/AuthContext";
 import {
@@ -20,8 +20,6 @@ import {
   Legend,
   ResponsiveContainer,
 } from "recharts";
-
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5001';
 
 interface DashboardStats {
   totalArticles: number;
@@ -53,11 +51,11 @@ export default function AdminDashboard() {
 
       // Fetch all data in parallel
       const [articlesRes, messagesRes, carouselRes, usersRes, activitiesRes] = await Promise.all([
-        axios.get(`${API_URL}/api/articles`),
-        axios.get(`${API_URL}/api/messages`),
-        axios.get(`${API_URL}/api/carousel`),
-        axios.get(`${API_URL}/api/users`),
-        axios.get(`${API_URL}/api/activities?limit=10`),
+        axios.get('/articles'),
+        axios.get('/messages'),
+        axios.get('/carousel'),
+        axios.get('/users'),
+        axios.get('/activities?limit=10'),
       ]);
 
       // Process articles
