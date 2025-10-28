@@ -62,6 +62,9 @@ connectDB();
 /**
  * Middleware Configuration
  */
+// Trust proxy - required when behind Nginx/reverse proxy
+app.set('trust proxy', 1);
+
 // Parse CORS_ORIGIN - can be comma-separated or single value
 const corsOrigins = process.env.CORS_ORIGIN 
   ? process.env.CORS_ORIGIN.split(',').map(origin => origin.trim())
