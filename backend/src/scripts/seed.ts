@@ -137,6 +137,7 @@ async function seedDefaultAdmin() {
     const existingAdmin = await User.findOne({ email: 'admin@royaldansity.com' });
     
     if (existingAdmin) {
+      console.log('ℹ️  Default admin user already exists, skipping...');
       logger.info('ℹ️  Default admin user already exists, skipping...');
       return;
     }
@@ -151,6 +152,10 @@ async function seedDefaultAdmin() {
       status: 'active',
     });
     
+    console.log('✅ Created default admin user');
+    console.log('📧 Email: admin@royaldansity.com');
+    console.log('🔑 Password: Admin@123');
+    console.log('⚠️  IMPORTANT: Change this password after first login!');
     logger.info('✅ Created default admin user');
     logger.info('📧 Email: admin@royaldansity.com');
     logger.info('🔑 Password: Admin@123');
@@ -166,24 +171,27 @@ async function seed() {
     // Connect to database
     await connectDB();
     
-    logger.info('');
+    console.log('');
+    console.log('🚀 Starting database seeding...');
+    console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
     logger.info('🚀 Starting database seeding...');
-    logger.info('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
     
     // Seed in order: permissions → roles → admin user
     await seedPermissions();
     await seedRoles();
     await seedDefaultAdmin();
     
-    logger.info('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+    console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+    console.log('🎉 Database seeded successfully!');
+    console.log('');
     logger.info('🎉 Database seeded successfully!');
-    logger.info('');
     
     process.exit(0);
   } catch (error) {
-    logger.error('');
+    console.error('');
+    console.error('❌ Seeding failed:', error);
+    console.error('');
     logger.error('❌ Seeding failed:', error);
-    logger.error('');
     process.exit(1);
   }
 }
