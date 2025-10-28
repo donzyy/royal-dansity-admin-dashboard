@@ -108,6 +108,7 @@ async function seedPermissions() {
     await Permission.deleteMany({});
     await Permission.insertMany(permissions);
     
+    console.log(`✅ Seeded ${permissions.length} permissions`);
     logger.info(`✅ Seeded ${permissions.length} permissions`);
   } catch (error) {
     logger.error('❌ Error seeding permissions:', error);
@@ -122,6 +123,7 @@ async function seedRoles() {
     await Role.deleteMany({});
     await Role.insertMany(roles);
     
+    console.log(`✅ Seeded ${roles.length} roles`);
     logger.info(`✅ Seeded ${roles.length} roles`);
   } catch (error) {
     logger.error('❌ Error seeding roles:', error);
