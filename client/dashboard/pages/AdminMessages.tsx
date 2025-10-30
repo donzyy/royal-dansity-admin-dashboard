@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import AdminLayout from "@/dashboard/components/AdminLayout";
-import axios from "axios";
+import axios from "@/lib/axios";
 import toast from "react-hot-toast";
 import Swal from "sweetalert2";
 
@@ -90,12 +90,7 @@ export default function AdminMessages() {
         params.priority = filterPriority;
       }
 
-      const response = await axios.get(`${API_URL}/api/messages`, {
-        params,
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await axios.get('/messages', { params });
 
       if (response.data.success) {
         setMessages(response.data.data.messages);
@@ -137,15 +132,7 @@ export default function AdminMessages() {
   const handleToggleStar = async (id: string, currentStarred: boolean) => {
     try {
       const token = localStorage.getItem('accessToken');
-      await axios.put(
-        `${API_URL}/api/messages/${id}`,
-        { isStarred: !currentStarred },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      await axios.put(`/messages/${id}`, { isStarred: !currentStarred });
 
       toast.success(currentStarred ? 'Removed from starred' : 'Added to starred');
       
@@ -161,15 +148,7 @@ export default function AdminMessages() {
   const handleToggleStatus = async (id: string, newStatus: 'unread' | 'read' | 'resolved') => {
     try {
       const token = localStorage.getItem('accessToken');
-      await axios.put(
-        `${API_URL}/api/messages/${id}`,
-        { status: newStatus },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      await axios.put(`/messages/${id}`, { status: newStatus });
 
       // Update local state
       setMessages(messages.map((msg) =>
@@ -199,12 +178,7 @@ export default function AdminMessages() {
 
     if (result.isConfirmed) {
       try {
-        const token = localStorage.getItem('accessToken');
-        await axios.delete(`${API_URL}/api/messages/${id}`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        await axios.delete(`/messages/${id}`);
 
         Swal.fire({
           title: 'Deleted!',

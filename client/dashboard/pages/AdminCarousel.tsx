@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import axios from "axios";
+import axios from "@/lib/axios";
 import { io, Socket } from "socket.io-client";
 import Swal from "sweetalert2";
 import toast from "react-hot-toast";
@@ -47,7 +47,7 @@ export default function AdminCarousel() {
 
   // Socket.IO setup
   useEffect(() => {
-    const newSocket = io(API_URL);
+    const newSocket = io(import.meta.env.VITE_SOCKET_URL || API_URL);
     setSocket(newSocket);
 
     newSocket.on('carousel:created', (data: CarouselSlide) => {
@@ -96,10 +96,7 @@ export default function AdminCarousel() {
         params.isActive = filterStatus === 'active';
       }
 
-      const response = await axios.get(`${API_URL}/api/carousel`, {
-        headers: { Authorization: `Bearer ${token}` },
-        params,
-      });
+      const response = await axios.get('/carousel', { params });
 
       if (response.data.success) {
         let fetchedSlides = response.data.data;
@@ -144,13 +141,7 @@ export default function AdminCarousel() {
   const handleReorder = async (slideId: string, direction: 'up' | 'down') => {
     try {
       const token = localStorage.getItem('accessToken');
-      const response = await axios.put(
-        `${API_URL}/api/carousel/${slideId}/reorder`,
-        { direction },
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
+      const response = await axios.put(`/carousel/${slideId}/reorder`, { direction });
 
       if (response.data.success) {
         // The socket event will update the slides
@@ -180,10 +171,7 @@ export default function AdminCarousel() {
 
     if (result.isConfirmed) {
       try {
-        const token = localStorage.getItem('accessToken');
-        await axios.delete(`${API_URL}/api/carousel/${slideId}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        await axios.delete(`/carousel/${slideId}`);
 
         Swal.fire({
           title: 'Deleted!',

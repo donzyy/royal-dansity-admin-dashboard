@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import axios from "axios";
+import axios from "@/lib/axios";
 import { io } from "socket.io-client";
 import Header from "@/website/components/Header";
 import Footer from "@/website/components/Footer";
@@ -64,7 +64,7 @@ export default function News() {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const response = await axios.get(`${API_URL}/api/categories`, {
+        const response = await axios.get(`/categories`, {
           params: { type: 'article', isActive: true },
         });
         if (response.data.success) {
@@ -99,7 +99,7 @@ export default function News() {
           params.category = selectedCategory;
         }
 
-        const response = await axios.get(`${API_URL}/api/articles`, { params });
+        const response = await axios.get(`/articles`, { params });
 
         if (response.data.success) {
           console.log('📊 API Response:', response.data.data);
@@ -121,7 +121,7 @@ export default function News() {
     fetchArticles();
 
     // Set up Socket.IO for real-time updates
-    const socket = io(API_URL, {
+    const socket = io(import.meta.env.VITE_SOCKET_URL || API_URL, {
       transports: ['websocket', 'polling'],
     });
 

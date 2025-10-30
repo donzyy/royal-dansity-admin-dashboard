@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import axios from "axios";
+import axios from "@/lib/axios";
 import { io, Socket } from "socket.io-client";
 import Swal from "sweetalert2";
 import toast from "react-hot-toast";
@@ -52,7 +52,7 @@ export default function AdminCategories() {
 
   // Socket.IO setup
   useEffect(() => {
-    const newSocket = io(API_URL);
+    const newSocket = io(import.meta.env.VITE_SOCKET_URL || API_URL);
     setSocket(newSocket);
 
     newSocket.on('category:created', (data: Category) => {
@@ -99,10 +99,7 @@ export default function AdminCategories() {
         params.isActive = filterStatus === 'active';
       }
 
-      const response = await axios.get(`${API_URL}/api/categories`, {
-        headers: { Authorization: `Bearer ${token}` },
-        params,
-      });
+      const response = await axios.get('/categories', { params });
 
       if (response.data.success) {
         let sortedCategories = [...response.data.data.categories];
@@ -188,10 +185,7 @@ export default function AdminCategories() {
 
     if (result.isConfirmed) {
       try {
-        const token = localStorage.getItem('accessToken');
-        await axios.delete(`${API_URL}/api/categories/${category._id}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        await axios.delete(`/categories/${category._id}`);
 
         Swal.fire({
           title: 'Deleted!',

@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import axios from "axios";
+import axios from "@/lib/axios";
 import Header from "@/website/components/Header";
 import Footer from "@/website/components/Footer";
 import BackToTop from "@/website/components/BackToTop";
@@ -41,13 +41,13 @@ export default function ArticleDetail() {
         setError(false);
         
         // Fetch article by slug
-        const response = await axios.get(`${API_URL}/api/articles/slug/${slug}`);
+        const response = await axios.get(`/articles/slug/${slug}`);
         
         if (response.data.success) {
           setArticle(response.data.data.article);
           
           // Fetch related articles in the same category
-          const relatedResponse = await axios.get(`${API_URL}/api/articles`, {
+          const relatedResponse = await axios.get(`/articles`, {
             params: {
               category: response.data.data.article.category,
               status: 'published',

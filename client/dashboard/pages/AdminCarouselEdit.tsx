@@ -1,11 +1,9 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import axios from "axios";
+import axios from "@/lib/axios";
 import AdminLayout from "@/dashboard/components/AdminLayout";
 import DashboardNotFound from "@/dashboard/components/DashboardNotFound";
 import toast from "react-hot-toast";
-
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5001';
 
 export default function AdminCarouselEdit() {
   const { id } = useParams<{ id: string }>();
@@ -37,10 +35,7 @@ export default function AdminCarouselEdit() {
   const fetchSlide = async () => {
     try {
       setLoading(true);
-      const token = localStorage.getItem('accessToken');
-      const response = await axios.get(`${API_URL}/api/carousel/${id}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const response = await axios.get(`/carousel/${id}`);
       
       if (response.data.success) {
         const slide = response.data.data.slide;
@@ -56,9 +51,11 @@ export default function AdminCarouselEdit() {
           isActive: slide.isActive !== undefined ? slide.isActive : true,
         });
 
+        const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5001';
+        
         // Set image preview
         const imagePreviewUrl = slide.image 
-          ? (slide.image.startsWith('http') ? slide.image : `${API_URL}${slide.image}`)
+          ? (slide.image.startsWith('http') ? slide.image : `${API_BASE}${slide.image}`)
           : "";
         setImagePreview(imagePreviewUrl);
       }
@@ -97,9 +94,8 @@ export default function AdminCarouselEdit() {
         uploadFormData.append('image', file);
         uploadFormData.append('uploadType', 'carousel');
 
-        const response = await axios.post(`${API_URL}/api/upload/image`, uploadFormData, {
+        const response = await axios.post('/upload/image', uploadFormData, {
           headers: {
-            'Authorization': `Bearer ${token}`,
             'Content-Type': 'multipart/form-data',
           },
         });
@@ -134,13 +130,13 @@ export default function AdminCarouselEdit() {
       };
 
       if (isCreateMode) {
-        const response = await axios.post(`${API_URL}/api/carousel`, dataToSend, config);
+        const response = await axios.post('/carousel', dataToSend, config);
         if (response.data.success) {
           toast.success('Carousel slide created successfully!');
           setTimeout(() => navigate('/admin/carousel'), 500);
         }
       } else {
-        const response = await axios.put(`${API_URL}/api/carousel/${id}`, dataToSend, config);
+        const response = await axios.put(`/carousel/${id}`, dataToSend, config);
         if (response.data.success) {
           toast.success('Carousel slide updated successfully!');
           setTimeout(() => navigate(`/admin/carousel/${id}`), 500);

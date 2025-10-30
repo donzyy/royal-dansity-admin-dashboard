@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import axios from "axios";
+import axios from "@/lib/axios";
 import AdminLayout from "@/dashboard/components/AdminLayout";
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5001';
@@ -29,7 +29,7 @@ export default function AdminActivityLog() {
   const fetchActivities = async () => {
     try {
       setLoading(true);
-      const response = await axios.get(`${API_URL}/api/activities`);
+      const response = await axios.get('/activities');
       setActivities(response.data.data.activities || []);
     } catch (err: any) {
       console.error('Error fetching activities:', err);

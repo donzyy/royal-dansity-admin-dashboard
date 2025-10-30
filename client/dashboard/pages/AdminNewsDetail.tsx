@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import axios from "axios";
+import axios from "@/lib/axios";
 import Swal from "sweetalert2";
 import AdminLayout from "@/dashboard/components/AdminLayout";
 import DashboardNotFound from "@/dashboard/components/DashboardNotFound";
@@ -47,7 +47,7 @@ export default function AdminNewsDetail() {
   const fetchArticle = async () => {
     try {
       setLoading(true);
-      const response = await axios.get(`${API_URL}/api/articles/${id}`);
+      const response = await axios.get(`/articles/${id}`);
       
       console.log('API Response:', response.data); // Debug log
       
@@ -80,7 +80,7 @@ export default function AdminNewsDetail() {
     if (!result.isConfirmed) return;
 
     try {
-      await axios.delete(`${API_URL}/api/articles/${id}`);
+      await axios.delete(`/articles/${id}`);
       
       Swal.fire({
         title: 'Deleted!',

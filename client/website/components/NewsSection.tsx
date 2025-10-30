@@ -3,7 +3,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Autoplay } from "swiper/modules";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import axios from "axios";
+import axios from "@/lib/axios";
 import { io } from "socket.io-client";
 
 interface Article {
@@ -69,7 +69,7 @@ export default function NewsSection() {
     // Fetch published articles from API
     const fetchArticles = async () => {
       try {
-        const response = await axios.get(`${API_URL}/api/articles`, {
+        const response = await axios.get(`/articles`, {
           params: {
             status: 'published',
             limit: 6,
@@ -92,7 +92,7 @@ export default function NewsSection() {
     fetchArticles();
 
     // Set up Socket.IO for real-time updates
-    const socket = io(API_URL, {
+    const socket = io(import.meta.env.VITE_SOCKET_URL || API_URL, {
       transports: ['websocket', 'polling'],
     });
 

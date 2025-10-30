@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import axios from "axios";
+import axios from "@/lib/axios";
 import toast from "react-hot-toast";
 import Swal from "sweetalert2";
 import { io, Socket } from "socket.io-client";
@@ -60,7 +60,7 @@ export default function AdminNews() {
 
   // Socket.IO setup
   useEffect(() => {
-    const newSocket = io(API_URL);
+    const newSocket = io(import.meta.env.VITE_SOCKET_URL || API_URL);
     setSocket(newSocket);
 
     newSocket.on('article:created', (data: Article) => {
@@ -114,7 +114,7 @@ export default function AdminNews() {
         params.search = searchTerm;
       }
 
-      const response = await axios.get(`${API_URL}/api/articles`, { params });
+      const response = await axios.get('/articles', { params });
       
       if (response.data.success) {
         setArticles(response.data.data.articles);
@@ -161,7 +161,7 @@ export default function AdminNews() {
     }
 
     try {
-      await axios.delete(`${API_URL}/api/articles/${id}`);
+      await axios.delete(`/articles/${id}`);
       
       Swal.fire({
         title: 'Deleted!',

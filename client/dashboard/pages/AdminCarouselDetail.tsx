@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import axios from "axios";
+import axios from "@/lib/axios";
 import Swal from "sweetalert2";
 import toast from "react-hot-toast";
 import AdminLayout from "@/dashboard/components/AdminLayout";
@@ -40,9 +40,7 @@ export default function AdminCarouselDetail() {
     try {
       setLoading(true);
       const token = localStorage.getItem('accessToken');
-      const response = await axios.get(`${API_URL}/api/carousel/${id}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const response = await axios.get(`/carousel/${id}`);
 
       if (response.data.success) {
         setSlide(response.data.data.slide);
@@ -71,10 +69,7 @@ export default function AdminCarouselDetail() {
 
     if (result.isConfirmed) {
       try {
-        const token = localStorage.getItem('accessToken');
-        await axios.delete(`${API_URL}/api/carousel/${slide._id}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        await axios.delete(`/carousel/${slide._id}`);
 
         Swal.fire({
           title: 'Deleted!',

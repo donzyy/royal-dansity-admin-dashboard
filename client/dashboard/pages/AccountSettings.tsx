@@ -4,6 +4,7 @@ import AdminLayout from "@/dashboard/components/AdminLayout";
 import PasswordStrengthIndicator from "@/shared/components/PasswordStrengthIndicator";
 import { authAPI, usersAPI } from "@/lib/api";
 import { useAuth } from "@/contexts/AuthContext";
+import axios from "@/lib/axios";
 import {
   validatePassword,
   passwordsMatch,
@@ -149,9 +150,10 @@ export default function AccountSettings() {
 
       // Set profile picture preview if exists
       if (userData.avatar) {
+        const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5001';
         const avatarUrl = userData.avatar.startsWith('http') 
           ? userData.avatar 
-          : `${import.meta.env.VITE_API_URL || 'http://localhost:5001'}${userData.avatar}`;
+          : `${API_BASE}${userData.avatar}`;
         setProfilePicturePreview(avatarUrl);
       }
     } catch (error) {
@@ -200,21 +202,17 @@ export default function AccountSettings() {
         if (profilePictureFile) {
           const formData = new FormData();
           formData.append('avatar', profilePictureFile);
+          formData.append('uploadType', 'user');
           
           try {
-            // Use 'accessToken' instead of 'token'
-            const token = localStorage.getItem('accessToken') || localStorage.getItem('token');
-            const uploadResponse = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5001'}/api/users/me/avatar`, {
-              method: 'POST',
+            const uploadResponse = await axios.post('/users/me/avatar', formData, {
               headers: {
-                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'multipart/form-data',
               },
-              body: formData,
             });
 
-            if (uploadResponse.ok) {
-              const uploadData = await uploadResponse.json();
-              updateData.avatar = uploadData.data.user.avatar;
+            if (uploadResponse.data.success) {
+              updateData.avatar = uploadResponse.data.data.user.avatar;
             }
           } catch (error) {
             console.error('Error uploading avatar:', error);

@@ -4,15 +4,15 @@ import { toast } from "react-hot-toast";
 import AdminLayout from "@/dashboard/components/AdminLayout";
 import { authAPI } from "@/lib/api";
 import { useAuth } from "@/contexts/AuthContext";
-
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5001';
+import axios from "@/lib/axios";
 
 const getFullImageUrl = (path: string | undefined): string => {
   if (!path) return '';
   if (path.startsWith('http://') || path.startsWith('https://')) {
     return path;
   }
-  return `${API_URL}${path}`;
+  const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5001';
+  return `${API_BASE}${path}`;
 };
 
 interface User {
@@ -110,28 +110,22 @@ export default function UserProfile() {
         throw new Error('User ID not found');
       }
 
-      const response = await fetch(`${API_URL}/api/users/${userId}/avatar`, {
-        method: 'POST',
+      const response = await axios.post(`/users/${userId}/avatar`, formData, {
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
+          'Content-Type': 'multipart/form-data',
         },
-        body: formData,
       });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Failed to upload avatar');
+      if (response.data.success) {
+        const fullAvatarUrl = getFullImageUrl(response.data.data.avatar);
+        setAvatar(fullAvatarUrl);
+        setAvatarPreview(fullAvatarUrl);
+        toast.success("Avatar updated successfully!");
+        
+        // Refresh user data in AuthContext and local state
+        await refreshUser();
+        await fetchUserData();
       }
-
-      const data = await response.json();
-      const fullAvatarUrl = getFullImageUrl(data.data.avatar);
-      setAvatar(fullAvatarUrl);
-      setAvatarPreview(fullAvatarUrl);
-      toast.success("Avatar updated successfully!");
-      
-      // Refresh user data in AuthContext and local state
-      await refreshUser();
-      await fetchUserData();
     } catch (error: any) {
       console.error('Error uploading avatar:', error);
       toast.error(error.message || 'Failed to upload avatar');

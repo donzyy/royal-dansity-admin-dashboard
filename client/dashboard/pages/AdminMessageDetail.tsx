@@ -4,7 +4,7 @@ import Swal from "sweetalert2";
 import toast from "react-hot-toast";
 import AdminLayout from "@/dashboard/components/AdminLayout";
 import DashboardNotFound from "@/dashboard/components/DashboardNotFound";
-import axios from "axios";
+import axios from "@/lib/axios";
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5001';
 
@@ -45,11 +45,7 @@ export default function AdminMessageDetail() {
       try {
         setLoading(true);
         const token = localStorage.getItem('accessToken');
-        const response = await axios.get(`${API_URL}/api/messages/${id}`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        const response = await axios.get(`/messages/${id}`);
 
         if (response.data.success) {
           const msg = response.data.data.message;
@@ -88,18 +84,7 @@ export default function AdminMessageDetail() {
       const token = localStorage.getItem('accessToken');
       
       // Update message status to resolved and set repliedAt
-      await axios.put(
-        `${API_URL}/api/messages/${id}`,
-        {
-          status: 'resolved',
-          repliedAt: new Date().toISOString(),
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      await axios.put(`/messages/${id}`, { status: 'resolved', repliedAt: new Date().toISOString() });
 
       // In a real application, you would send the email here via a backend endpoint
       // For now, we'll just show a success message
@@ -118,11 +103,7 @@ export default function AdminMessageDetail() {
       setReplyText("");
       
       // Refresh message data
-      const response = await axios.get(`${API_URL}/api/messages/${id}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await axios.get(`/messages/${id}`);
       
       if (response.data.success) {
         setMessage(response.data.data.message);
@@ -146,15 +127,7 @@ export default function AdminMessageDetail() {
 
     try {
       const token = localStorage.getItem('accessToken');
-      const response = await axios.put(
-        `${API_URL}/api/messages/${id}`,
-        { isStarred: !message.isStarred },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const response = await axios.put(`/messages/${id}`, { isStarred: !message.isStarred });
 
       if (response.data.success) {
         setMessage(response.data.data.message);
@@ -172,15 +145,7 @@ export default function AdminMessageDetail() {
 
     try {
       const token = localStorage.getItem('accessToken');
-      const response = await axios.put(
-        `${API_URL}/api/messages/${id}`,
-        { status: newStatus },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const response = await axios.put(`/messages/${id}`, { status: newStatus });
 
       if (response.data.success) {
         setMessage(response.data.data.message);
@@ -198,15 +163,7 @@ export default function AdminMessageDetail() {
 
     try {
       const token = localStorage.getItem('accessToken');
-      const response = await axios.put(
-        `${API_URL}/api/messages/${id}`,
-        { notes },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const response = await axios.put(`/messages/${id}`, { notes });
 
       if (response.data.success) {
         setMessage(response.data.data.message);
@@ -224,15 +181,7 @@ export default function AdminMessageDetail() {
 
     try {
       const token = localStorage.getItem('accessToken');
-      const response = await axios.put(
-        `${API_URL}/api/messages/${id}`,
-        { priority: newPriority },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const response = await axios.put(`/messages/${id}`, { priority: newPriority });
 
       if (response.data.success) {
         setMessage(response.data.data.message);
@@ -260,12 +209,7 @@ export default function AdminMessageDetail() {
 
     if (result.isConfirmed) {
       try {
-        const token = localStorage.getItem('accessToken');
-        await axios.delete(`${API_URL}/api/messages/${id}`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        await axios.delete(`/messages/${id}`);
 
         Swal.fire({
           title: 'Deleted!',

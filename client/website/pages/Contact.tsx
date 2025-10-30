@@ -3,7 +3,7 @@ import Footer from "@/website/components/Footer";
 import BackToTop from "@/website/components/BackToTop";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import axios from "axios";
+import axios from "@/lib/axios";
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5001';
 
@@ -92,7 +92,7 @@ export default function Contact() {
     setLoading(true);
 
     try {
-      const response = await axios.post(`${API_URL}/api/messages`, formData);
+      const response = await axios.post(`/messages`, formData);
 
       if (response.data.success) {
         setSuccess(true);

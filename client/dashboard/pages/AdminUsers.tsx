@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import axios from "@/lib/axios";
 import { toast } from "react-hot-toast";
 import Swal from "sweetalert2";
 import { io, Socket } from "socket.io-client";
@@ -82,12 +82,7 @@ export default function AdminUsers() {
       if (roleFilter !== 'all') params.role = roleFilter;
       if (statusFilter !== 'all') params.status = statusFilter;
 
-      const response = await axios.get(`${API_URL}/api/users`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        params,
-      });
+      const response = await axios.get('/users', { params });
 
       setUsers(response.data.data.users);
       setStats(response.data.data.stats);
@@ -107,7 +102,7 @@ export default function AdminUsers() {
 
   // Socket.IO for real-time updates
   useEffect(() => {
-    const newSocket = io(API_URL);
+    const newSocket = io(import.meta.env.VITE_SOCKET_URL || API_URL);
     setSocket(newSocket);
 
     newSocket.on('user:created', () => {
@@ -143,15 +138,7 @@ export default function AdminUsers() {
       const token = localStorage.getItem('accessToken');
       const newStatus = currentStatus === 'active' ? 'inactive' : 'active';
 
-      await axios.put(
-        `${API_URL}/api/users/${id}`,
-        { status: newStatus },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      await axios.put(`/users/${id}`, { status: newStatus });
 
       toast.success(`User ${newStatus === 'active' ? 'activated' : 'deactivated'} successfully`);
       fetchUsers();
@@ -166,15 +153,7 @@ export default function AdminUsers() {
     try {
       const token = localStorage.getItem('accessToken');
 
-      await axios.put(
-        `${API_URL}/api/users/${id}`,
-        { role: newRole },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      await axios.put(`/users/${id}`, { role: newRole });
 
       toast.success('User role updated successfully');
       fetchUsers();
@@ -199,12 +178,7 @@ export default function AdminUsers() {
 
     if (result.isConfirmed) {
       try {
-        const token = localStorage.getItem('accessToken');
-        await axios.delete(`${API_URL}/api/users/${id}`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        await axios.delete(`/users/${id}`);
 
         toast.success('User deleted successfully');
         fetchUsers();

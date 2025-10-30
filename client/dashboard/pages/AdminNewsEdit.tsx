@@ -1,12 +1,10 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import axios from "axios";
+import axios from "@/lib/axios";
 import AdminLayout from "@/dashboard/components/AdminLayout";
 import DashboardNotFound from "@/dashboard/components/DashboardNotFound";
 import { toast } from "sonner";
-
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5001';
 
 export default function AdminNewsEdit() {
   const { t } = useTranslation();
@@ -39,7 +37,7 @@ export default function AdminNewsEdit() {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const response = await axios.get(`${API_URL}/api/categories`, {
+        const response = await axios.get('/categories', {
           params: { type: 'article', isActive: true },
         });
         if (response.data.success) {
@@ -71,24 +69,21 @@ export default function AdminNewsEdit() {
   const fetchArticle = async () => {
     try {
       setLoading(true);
-      const token = localStorage.getItem('accessToken');
-      const response = await axios.get(`${API_URL}/api/articles/${id}`, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
+      const response = await axios.get(`/articles/${id}`);
       
       if (response.data.success) {
         // Backend returns data.article, not data.data
         const article = response.data.data.article || response.data.data;
         
+        const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5001';
+        
         // Convert image paths to full URLs for preview
         const imagePreviewUrl = article.image 
-          ? (article.image.startsWith('http') ? article.image : `${API_URL}${article.image}`)
+          ? (article.image.startsWith('http') ? article.image : `${API_BASE}${article.image}`)
           : "";
           
         const additionalImagesPreviewUrls = (article.additionalImages || []).map((img: string) => 
-          img.startsWith('http') ? img : `${API_URL}${img}`
+          img.startsWith('http') ? img : `${API_BASE}${img}`
         );
         
         setFormData({
@@ -174,9 +169,8 @@ export default function AdminNewsEdit() {
         uploadFormData.append('image', file);
         uploadFormData.append('uploadType', 'article');
 
-        const response = await axios.post(`${API_URL}/api/upload/image`, uploadFormData, {
+        const response = await axios.post('/upload/image', uploadFormData, {
           headers: {
-            'Authorization': `Bearer ${token}`,
             'Content-Type': 'multipart/form-data',
           },
         });
@@ -211,9 +205,8 @@ export default function AdminNewsEdit() {
         });
         uploadFormData.append('uploadType', 'article');
 
-        const response = await axios.post(`${API_URL}/api/upload/images`, uploadFormData, {
+        const response = await axios.post('/upload/images', uploadFormData, {
           headers: {
-            'Authorization': `Bearer ${token}`,
             'Content-Type': 'multipart/form-data',
           },
         });
@@ -276,7 +269,7 @@ export default function AdminNewsEdit() {
 
       if (isCreateMode) {
         // Create new article
-        const response = await axios.post(`${API_URL}/api/articles`, apiData, config);
+        const response = await axios.post('/articles', apiData, config);
 
         if (response.data.success) {
           toast.success("Article created successfully!");
@@ -284,7 +277,7 @@ export default function AdminNewsEdit() {
         }
       } else {
         // Update existing article
-        const response = await axios.put(`${API_URL}/api/articles/${id}`, apiData, config);
+        const response = await axios.put(`/articles/${id}`, apiData, config);
 
         if (response.data.success) {
           toast.success("Article updated successfully!");

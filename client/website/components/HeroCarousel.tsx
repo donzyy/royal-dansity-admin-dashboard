@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, Navigation } from "swiper/modules";
-import axios from "axios";
+import axios from "@/lib/axios";
 import { io } from "socket.io-client";
 
 interface CarouselSlide {
@@ -63,7 +63,7 @@ export default function HeroCarousel() {
     // Fetch carousel slides from API
     const fetchSlides = async () => {
       try {
-        const response = await axios.get(`${API_URL}/api/carousel`);
+        const response = await axios.get(`/carousel`);
         if (response.data.success && response.data.data.length > 0) {
           // Filter active slides and sort by order
           const activeSlides = response.data.data
@@ -85,7 +85,7 @@ export default function HeroCarousel() {
     fetchSlides();
 
     // Set up Socket.IO for real-time updates
-    const socket = io(API_URL, {
+    const socket = io(import.meta.env.VITE_SOCKET_URL || API_URL, {
       transports: ['websocket', 'polling'],
     });
 

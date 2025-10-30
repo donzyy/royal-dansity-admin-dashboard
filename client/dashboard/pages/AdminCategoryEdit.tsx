@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import axios from "axios";
+import axios from "@/lib/axios";
 import AdminLayout from "@/dashboard/components/AdminLayout";
 import DashboardNotFound from "@/dashboard/components/DashboardNotFound";
 import toast from "react-hot-toast";
@@ -35,9 +35,7 @@ export default function AdminCategoryEdit() {
     try {
       setLoading(true);
       const token = localStorage.getItem('accessToken');
-      const response = await axios.get(`${API_URL}/api/categories/${id}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const response = await axios.get(`/categories/${id}`);
       
       if (response.data.success) {
         const category = response.data.data.category;
@@ -73,9 +71,7 @@ export default function AdminCategoryEdit() {
 
     try {
       const token = localStorage.getItem('accessToken');
-      const config = {
-        headers: { Authorization: `Bearer ${token}` },
-      };
+      const config = {} as const;
 
       // Prepare data with proper types
       const dataToSend = {
@@ -84,13 +80,13 @@ export default function AdminCategoryEdit() {
       };
 
       if (isCreateMode) {
-        const response = await axios.post(`${API_URL}/api/categories`, dataToSend, config);
+        const response = await axios.post(`/categories`, dataToSend, config);
         if (response.data.success) {
           toast.success('Category created successfully!');
           setTimeout(() => navigate('/admin/categories'), 500);
         }
       } else {
-        const response = await axios.put(`${API_URL}/api/categories/${id}`, dataToSend, config);
+        const response = await axios.put(`/categories/${id}`, dataToSend, config);
         if (response.data.success) {
           toast.success('Category updated successfully!');
           setTimeout(() => navigate('/admin/categories'), 500);
