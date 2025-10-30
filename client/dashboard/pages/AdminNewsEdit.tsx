@@ -218,8 +218,8 @@ export default function AdminNewsEdit() {
       // Upload pending featured image first, if any
       if (pendingImageFile) {
         const uploadFormData = new FormData();
-        uploadFormData.append('image', pendingImageFile);
         uploadFormData.append('uploadType', 'article');
+        uploadFormData.append('image', pendingImageFile);
         const uploadRes = await axios.post('/upload/image', uploadFormData, {
           headers: { 'Content-Type': 'multipart/form-data' },
         });
@@ -231,8 +231,8 @@ export default function AdminNewsEdit() {
       // Upload any pending additional images, if any
       if (pendingAdditionalFiles.length > 0) {
         const multiForm = new FormData();
-        pendingAdditionalFiles.forEach((file) => multiForm.append('images', file));
         multiForm.append('uploadType', 'article');
+        pendingAdditionalFiles.forEach((file) => multiForm.append('images', file));
         const multiRes = await axios.post('/upload/images', multiForm, {
           headers: { 'Content-Type': 'multipart/form-data' },
         });

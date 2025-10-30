@@ -123,8 +123,8 @@ export default function UserProfile() {
       // Upload avatar first if a new file is pending
       if (pendingAvatarFile && user) {
         const formData = new FormData();
-        formData.append('image', pendingAvatarFile);
         formData.append('uploadType', 'user');
+        formData.append('image', pendingAvatarFile);
         const userId = user._id || user.id;
         const uploadRes = await axios.post(`/users/${userId}/avatar`, formData, {
           headers: { 'Content-Type': 'multipart/form-data' },

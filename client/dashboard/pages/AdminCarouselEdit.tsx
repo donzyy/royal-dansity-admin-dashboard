@@ -107,8 +107,8 @@ export default function AdminCarouselEdit() {
       // If a new image is selected, upload it first
       if (pendingImageFile) {
         const uploadFormData = new FormData();
-        uploadFormData.append('image', pendingImageFile);
         uploadFormData.append('uploadType', 'carousel');
+        uploadFormData.append('image', pendingImageFile);
         const uploadRes = await axios.post('/upload/image', uploadFormData, {
           headers: { 'Content-Type': 'multipart/form-data' },
         });

@@ -201,8 +201,8 @@ export default function AccountSettings() {
         // Upload avatar if a new file was selected
         if (profilePictureFile) {
           const formData = new FormData();
-          formData.append('avatar', profilePictureFile);
           formData.append('uploadType', 'user');
+          formData.append('avatar', profilePictureFile);
           
           try {
             const uploadResponse = await axios.post('/users/me/avatar', formData, {
