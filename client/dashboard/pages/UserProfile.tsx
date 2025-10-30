@@ -36,6 +36,7 @@ export default function UserProfile() {
     "https://api.dicebear.com/7.x/avataaars/svg?seed=Admin"
   );
   const [avatarPreview, setAvatarPreview] = useState(avatar);
+  const [pendingAvatarFile, setPendingAvatarFile] = useState<File | null>(null);
   const [profileData, setProfileData] = useState({
     name: "",
     email: "",
@@ -84,12 +85,9 @@ export default function UserProfile() {
     }
   };
 
-  const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleAvatarUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (!file || !user) {
-      console.error('No file or user:', { file, user });
-      return;
-    }
+    if (!file) return;
 
     // Show preview immediately
     const reader = new FileReader();
@@ -97,43 +95,8 @@ export default function UserProfile() {
       setAvatarPreview(reader.result as string);
     };
     reader.readAsDataURL(file);
-
-    // Upload to server
-    try {
-      const formData = new FormData();
-      formData.append('image', file);
-      formData.append('uploadType', 'user');
-
-      // Get user ID from the user object (could be _id or id)
-      const userId = user._id || user.id;
-      if (!userId) {
-        throw new Error('User ID not found');
-      }
-
-      const response = await axios.post(`/users/${userId}/avatar`, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
-
-      if (response.data.success) {
-        const fullAvatarUrl = getFullImageUrl(response.data.data.avatar);
-        setAvatar(fullAvatarUrl);
-        setAvatarPreview(fullAvatarUrl);
-        toast.success("Avatar updated successfully!");
-        
-        // Refresh user data in AuthContext and local state
-        await refreshUser();
-        await fetchUserData();
-      }
-    } catch (error: any) {
-      console.error('Error uploading avatar:', error);
-      toast.error(error.message || 'Failed to upload avatar');
-      // Revert preview on error
-      if (user.avatar) {
-        setAvatarPreview(user.avatar);
-      }
-    }
+    setPendingAvatarFile(file);
+    toast.success('Image selected. Click Save to upload.');
   };
 
   const handleProfileChange = (
@@ -154,11 +117,36 @@ export default function UserProfile() {
     }));
   };
 
-  const handleProfileSubmit = (e: React.FormEvent) => {
+  const handleProfileSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsEditing(false);
-    setSuccessMessage("Profile updated successfully!");
-    setTimeout(() => setSuccessMessage(""), 3000);
+    try {
+      // Upload avatar first if a new file is pending
+      if (pendingAvatarFile && user) {
+        const formData = new FormData();
+        formData.append('image', pendingAvatarFile);
+        formData.append('uploadType', 'user');
+        const userId = user._id || user.id;
+        const uploadRes = await axios.post(`/users/${userId}/avatar`, formData, {
+          headers: { 'Content-Type': 'multipart/form-data' },
+        });
+        if (uploadRes.data?.success) {
+          const fullAvatarUrl = getFullImageUrl(uploadRes.data.data.avatar);
+          setAvatar(fullAvatarUrl);
+          setAvatarPreview(fullAvatarUrl);
+          setPendingAvatarFile(null);
+        }
+      }
+
+      // Optionally update profile text fields via API here if available
+      setIsEditing(false);
+      setSuccessMessage("Profile updated successfully!");
+      setTimeout(() => setSuccessMessage(""), 3000);
+      await refreshUser();
+      await fetchUserData();
+    } catch (err: any) {
+      console.error('Error saving profile:', err);
+      toast.error(err.message || 'Failed to save profile');
+    }
   };
 
   const handlePasswordSubmit = (e: React.FormEvent) => {
