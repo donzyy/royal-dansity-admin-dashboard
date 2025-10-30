@@ -18,6 +18,8 @@ export default function AdminNewsEdit() {
   const [error, setError] = useState(false);
   const [imagePreview, setImagePreview] = useState<string>(isCreateMode ? "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80" : "");
   const [additionalImagePreviews, setAdditionalImagePreviews] = useState<string[]>([]);
+  const [pendingImageFile, setPendingImageFile] = useState<File | null>(null);
+  const [pendingAdditionalFiles, setPendingAdditionalFiles] = useState<File[]>([]);
   const [categories, setCategories] = useState<Array<{ _id: string; name: string; slug: string }>>([]);
 
   const [formData, setFormData] = useState({
@@ -152,86 +154,32 @@ export default function AdminNewsEdit() {
     }));
   };
 
-  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
-      try {
-        // Show preview immediately
-        const reader = new FileReader();
-        reader.onloadend = () => {
-          setImagePreview(reader.result as string);
-        };
-        reader.readAsDataURL(file);
-
-        // Upload to server
-        const token = localStorage.getItem('accessToken');
-        const uploadFormData = new FormData();
-        uploadFormData.append('image', file);
-        uploadFormData.append('uploadType', 'article');
-
-        const response = await axios.post('/upload/image', uploadFormData, {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-          },
-        });
-
-        if (response.data.success) {
-          // Save the server path
-          setFormData((prev) => ({
-            ...prev,
-            image: response.data.data.path,
-          }));
-          toast.success('Image uploaded successfully!');
-        }
-      } catch (error: any) {
-        console.error('Error uploading image:', error);
-        toast.error('Failed to upload image');
-      }
-    }
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setImagePreview(reader.result as string);
+    };
+    reader.readAsDataURL(file);
+    setPendingImageFile(file);
   };
 
-  const handleAdditionalImageUpload = async (
-    e: React.ChangeEvent<HTMLInputElement>
-  ) => {
+  const handleAdditionalImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
-    if (files && files.length > 0) {
-      try {
-        // Upload all files to server
-        const token = localStorage.getItem('accessToken');
-        const uploadFormData = new FormData();
-        
-        Array.from(files).forEach((file) => {
-          uploadFormData.append('images', file);
-        });
-        uploadFormData.append('uploadType', 'article');
-
-        const response = await axios.post('/upload/images', uploadFormData, {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-          },
-        });
-
-        if (response.data.success) {
-          const uploadedFiles = response.data.data.files;
-          const newPaths = uploadedFiles.map((f: any) => f.path);
-          const newUrls = uploadedFiles.map((f: any) => f.url);
-          
-          setAdditionalImagePreviews([
-            ...additionalImagePreviews,
-            ...newUrls,
-          ]);
-          setFormData((prev) => ({
-            ...prev,
-            additionalImages: [...prev.additionalImages, ...newPaths],
-          }));
-          
-          toast.success(`${files.length} image(s) uploaded successfully!`);
-        }
-      } catch (error: any) {
-        console.error('Error uploading images:', error);
-        toast.error('Failed to upload images');
-      }
-    }
+    if (!files || files.length === 0) return;
+    const previews: string[] = [];
+    const selected = Array.from(files);
+    selected.forEach((file) => {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        previews.push(reader.result as string);
+        // Set after all readers finish roughly; acceptable for UX here
+        setAdditionalImagePreviews((prev) => [...prev, reader.result as string]);
+      };
+      reader.readAsDataURL(file);
+    });
+    setPendingAdditionalFiles((prev) => [...prev, ...selected]);
   };
 
   const removeAdditionalImage = (index: number) => {
@@ -266,6 +214,34 @@ export default function AdminNewsEdit() {
           Authorization: `Bearer ${token}`
         }
       };
+
+      // Upload pending featured image first, if any
+      if (pendingImageFile) {
+        const uploadFormData = new FormData();
+        uploadFormData.append('image', pendingImageFile);
+        uploadFormData.append('uploadType', 'article');
+        const uploadRes = await axios.post('/upload/image', uploadFormData, {
+          headers: { 'Content-Type': 'multipart/form-data' },
+        });
+        if (uploadRes.data?.success) {
+          apiData.image = uploadRes.data.data.path;
+        }
+      }
+
+      // Upload any pending additional images, if any
+      if (pendingAdditionalFiles.length > 0) {
+        const multiForm = new FormData();
+        pendingAdditionalFiles.forEach((file) => multiForm.append('images', file));
+        multiForm.append('uploadType', 'article');
+        const multiRes = await axios.post('/upload/images', multiForm, {
+          headers: { 'Content-Type': 'multipart/form-data' },
+        });
+        if (multiRes.data?.success) {
+          const uploadedFiles = multiRes.data.data.files;
+          const newPaths = uploadedFiles.map((f: any) => f.path);
+          apiData.additionalImages = [...apiData.additionalImages, ...newPaths];
+        }
+      }
 
       if (isCreateMode) {
         // Create new article
@@ -338,10 +314,11 @@ export default function AdminNewsEdit() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-semibold text-royal-black mb-2">
+                  <label htmlFor="category" className="block text-sm font-semibold text-royal-black mb-2">
                     Category <span className="text-red-600">*</span>
                   </label>
                   <select
+                    id="category"
                     name="category"
                     value={formData.category}
                     onChange={handleInputChange}
@@ -375,10 +352,11 @@ export default function AdminNewsEdit() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-semibold text-royal-black mb-2">
+                  <label htmlFor="status" className="block text-sm font-semibold text-royal-black mb-2">
                     Status <span className="text-red-600">*</span>
                   </label>
                   <select
+                    id="status"
                     name="status"
                     value={formData.status}
                     onChange={handleInputChange}
@@ -407,7 +385,7 @@ export default function AdminNewsEdit() {
                     <input
                       type="file"
                       accept="image/*"
-                      onChange={handleImageUpload}
+                      onChange={handleImageSelect}
                       className="hidden"
                     />
                   </label>
@@ -464,7 +442,7 @@ export default function AdminNewsEdit() {
                       type="file"
                       accept="image/*"
                       multiple
-                      onChange={handleAdditionalImageUpload}
+                      onChange={handleAdditionalImageSelect}
                       className="hidden"
                     />
                   </label>

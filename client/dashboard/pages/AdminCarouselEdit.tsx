@@ -14,6 +14,7 @@ export default function AdminCarouselEdit() {
   const [loading, setLoading] = useState(!isCreateMode);
   const [error, setError] = useState(false);
   const [imagePreview, setImagePreview] = useState("");
+  const [pendingImageFile, setPendingImageFile] = useState<File | null>(null);
 
   const [formData, setFormData] = useState({
     title: '',
@@ -77,41 +78,15 @@ export default function AdminCarouselEdit() {
     }));
   };
 
-  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
-      try {
-        // Show preview immediately
-        const reader = new FileReader();
-        reader.onloadend = () => {
-          setImagePreview(reader.result as string);
-        };
-        reader.readAsDataURL(file);
-
-        // Upload to server
-        const token = localStorage.getItem('accessToken');
-        const uploadFormData = new FormData();
-        uploadFormData.append('image', file);
-        uploadFormData.append('uploadType', 'carousel');
-
-        const response = await axios.post('/upload/image', uploadFormData, {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-          },
-        });
-
-        if (response.data.success) {
-          setFormData((prev) => ({
-            ...prev,
-            image: response.data.data.path,
-          }));
-          toast.success('Image uploaded successfully!');
-        }
-      } catch (error: any) {
-        console.error('Error uploading image:', error);
-        toast.error('Failed to upload image');
-      }
-    }
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setImagePreview(reader.result as string);
+    };
+    reader.readAsDataURL(file);
+    setPendingImageFile(file);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -128,6 +103,19 @@ export default function AdminCarouselEdit() {
         ...formData,
         order: Number(formData.order),
       };
+
+      // If a new image is selected, upload it first
+      if (pendingImageFile) {
+        const uploadFormData = new FormData();
+        uploadFormData.append('image', pendingImageFile);
+        uploadFormData.append('uploadType', 'carousel');
+        const uploadRes = await axios.post('/upload/image', uploadFormData, {
+          headers: { 'Content-Type': 'multipart/form-data' },
+        });
+        if (uploadRes.data?.success) {
+          dataToSend.image = uploadRes.data.data.path;
+        }
+      }
 
       if (isCreateMode) {
         const response = await axios.post('/carousel', dataToSend, config);
@@ -270,7 +258,7 @@ export default function AdminCarouselEdit() {
                     <input
                       type="file"
                       accept="image/*"
-                      onChange={handleImageUpload}
+                      onChange={handleImageSelect}
                       className="hidden"
                     />
                   </label>
