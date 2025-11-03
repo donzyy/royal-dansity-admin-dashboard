@@ -48,7 +48,7 @@ const createTransporter = () => {
     // Fallback: Log to console (development only)
     if (process.env.NODE_ENV !== 'production') {
       logger.warn('No SMTP configuration found. Emails will be logged to console.');
-      return nodemailer.createTransporter({
+      return nodemailer.createTransport({
         streamTransport: true,
         newline: 'unix',
         buffer: true,
