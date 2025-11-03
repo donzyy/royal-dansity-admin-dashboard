@@ -60,9 +60,9 @@ io.on('connection', (socket) => {
 connectDB();
 
 /**
- * Initialize Cron Jobs
+ * Initialize Cron Jobs (opt-in only)
  */
-if (process.env.NODE_ENV === 'production' || process.env.ENABLE_CRON_JOBS === 'true') {
+if (process.env.ENABLE_CRON_JOBS === 'true') {
   import('./jobs/scheduler.js').catch((error) => {
     logger.error('Failed to load cron jobs:', error);
   });
