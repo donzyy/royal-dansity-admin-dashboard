@@ -113,18 +113,25 @@ FRONTEND_URL=http://localhost:5173
 # For production:
 # FRONTEND_URL=https://yourdomain.com
 
-# Email Configuration (Choose one)
-# Option 1: Gmail
-EMAIL_SERVICE=gmail
-EMAIL_USER=your-email@gmail.com
-EMAIL_PASSWORD=your-app-specific-password
+# Email Configuration (Mailtrap)
+# For development/testing - use Email Testing credentials:
+SMTP_HOST=smtp.mailtrap.io
+SMTP_PORT=2525
+SMTP_USER=your-testing-username
+SMTP_PASS=your-testing-password
+SMTP_SECURE=false
 
-# Option 2: SendGrid (recommended for production)
-# EMAIL_SERVICE=sendgrid
-# SENDGRID_API_KEY=your-sendgrid-api-key
+# For production - use Email Sending credentials (different from testing!):
+# SMTP_HOST=smtp.mailtrap.io
+# SMTP_PORT=587
+# SMTP_USER=your-sending-username
+# SMTP_PASS=your-sending-password
+# SMTP_SECURE=false
 
 EMAIL_FROM=noreply@royaldansity.com
 EMAIL_FROM_NAME=Royal Dansity
+
+# See EMAIL_SETUP_GUIDE.md for complete Mailtrap setup instructions
 
 # File Uploads
 MAX_FILE_SIZE=10485760
@@ -171,11 +178,17 @@ JWT_REFRESH_EXPIRES_IN=7d
 CORS_ORIGIN=https://yourdomain.com
 FRONTEND_URL=https://yourdomain.com
 
-# Email (SendGrid recommended)
-EMAIL_SERVICE=sendgrid
-SENDGRID_API_KEY=your-sendgrid-api-key
+# Email Configuration (Mailtrap - Production)
+SMTP_HOST=smtp.mailtrap.io
+SMTP_PORT=587
+SMTP_USER=your-sending-username
+SMTP_PASS=your-sending-password
+SMTP_SECURE=false
 EMAIL_FROM=noreply@yourdomain.com
 EMAIL_FROM_NAME=Royal Dansity
+# Note: Use Email Sending credentials (not Email Testing!)
+# Domain must be verified in Mailtrap
+# See EMAIL_SETUP_GUIDE.md for setup instructions
 
 # Paths on server
 UPLOAD_DIR=/var/www/royaldansity/uploads

@@ -60,6 +60,15 @@ io.on('connection', (socket) => {
 connectDB();
 
 /**
+ * Initialize Cron Jobs
+ */
+if (process.env.NODE_ENV === 'production' || process.env.ENABLE_CRON_JOBS === 'true') {
+  import('./jobs/scheduler').catch((error) => {
+    logger.error('Failed to load cron jobs:', error);
+  });
+}
+
+/**
  * Middleware Configuration
  */
 // Trust proxy - required when behind Nginx/reverse proxy

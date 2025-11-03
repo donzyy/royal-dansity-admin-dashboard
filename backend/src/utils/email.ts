@@ -1,4 +1,4 @@
-import * as nodemailer from 'nodemailer';
+import nodemailer from 'nodemailer';
 import { logger } from './logger';
 
 /**
@@ -15,24 +15,27 @@ interface EmailOptions {
 
 // Create reusable transporter
 const createTransporter = () => {
-  // For development: Use Mailtrap or console logging
-  // For production: Use real SMTP service (SendGrid, AWS SES, etc.)
+  // Mailtrap supports both Email Testing and Email Sending
+  // Email Testing: Uses port 2525 (catches emails in fake inbox)
+  // Email Sending: Uses port 587 or 465 (sends real emails with verified domain)
   
-  const isDevelopment = process.env.NODE_ENV !== 'production';
-  
-  if (isDevelopment && process.env.SMTP_HOST === 'smtp.mailtrap.io') {
-    // Mailtrap for testing
-    return nodemailer.createTransporter({
+  if (process.env.SMTP_HOST === 'smtp.mailtrap.io') {
+    // Mailtrap (works for both testing and production)
+    const port = Number(process.env.SMTP_PORT) || 2525;
+    const isSecure = port === 465;
+    
+    return nodemailer.createTransport({
       host: process.env.SMTP_HOST,
-      port: Number(process.env.SMTP_PORT) || 2525,
+      port: port,
+      secure: isSecure, // true for 465, false for other ports
       auth: {
         user: process.env.SMTP_USER,
         pass: process.env.SMTP_PASS,
       },
     });
   } else if (process.env.SMTP_HOST) {
-    // Production SMTP (SendGrid, AWS SES, Gmail, etc.)
-    return nodemailer.createTransporter({
+    // Other SMTP services (Gmail, AWS SES, etc.)
+    return nodemailer.createTransport({
       host: process.env.SMTP_HOST,
       port: Number(process.env.SMTP_PORT) || 587,
       secure: process.env.SMTP_SECURE === 'true', // true for 465, false for other ports
@@ -43,12 +46,16 @@ const createTransporter = () => {
     });
   } else {
     // Fallback: Log to console (development only)
-    logger.warn('No SMTP configuration found. Emails will be logged to console.');
-    return nodemailer.createTransporter({
-      streamTransport: true,
-      newline: 'unix',
-      buffer: true,
-    });
+    if (process.env.NODE_ENV !== 'production') {
+      logger.warn('No SMTP configuration found. Emails will be logged to console.');
+      return nodemailer.createTransporter({
+        streamTransport: true,
+        newline: 'unix',
+        buffer: true,
+      });
+    } else {
+      throw new Error('SMTP configuration is required in production. Please set SMTP_HOST, SMTP_PORT, SMTP_USER, and SMTP_PASS in your .env file.');
+    }
   }
 };
 
@@ -97,7 +104,10 @@ export const sendPasswordResetEmail = async (
   resetToken: string,
   userName: string
 ): Promise<boolean> => {
-  const resetUrl = `${process.env.FRONTEND_URL || 'http://localhost:5173'}/reset-password?token=${resetToken}`;
+  const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
+  const resetUrl = `${frontendUrl}/reset-password?token=${resetToken}`;
+  // Logo URL - must be absolute for email clients
+  const logoUrl = `${frontendUrl}/Royal%20Dansity%20Inv%20Intl_LOGO_NO%20BACKGROUND.png`;
 
   const html = `
     <!DOCTYPE html>
@@ -127,12 +137,9 @@ export const sendPasswordResetEmail = async (
             margin-bottom: 30px;
           }
           .logo {
-            font-size: 28px;
-            font-weight: bold;
-            background: linear-gradient(135deg, #D4AF37 0%, #C8963E 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+            display: inline-block;
+            max-width: 200px;
+            height: auto;
           }
           h1 {
             color: #1a1a1a;
@@ -180,7 +187,9 @@ export const sendPasswordResetEmail = async (
       <body>
         <div class="container">
           <div class="header">
-            <div class="logo">ROYAL DANSITY</div>
+            <a href="${frontendUrl}" style="text-decoration: none; display: inline-block;">
+              <img src="${logoUrl}" alt="Royal Dansity Investments International" class="logo" style="max-width: 200px; height: auto;" />
+            </a>
           </div>
           
           <h1>Reset Your Password</h1>
@@ -232,6 +241,10 @@ export const sendPasswordChangeConfirmation = async (
   email: string,
   userName: string
 ): Promise<boolean> => {
+  const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
+  // Logo URL - must be absolute for email clients
+  const logoUrl = `${frontendUrl}/Royal%20Dansity%20Inv%20Intl_LOGO_NO%20BACKGROUND.png`;
+
   const html = `
     <!DOCTYPE html>
     <html>
@@ -260,12 +273,9 @@ export const sendPasswordChangeConfirmation = async (
             margin-bottom: 30px;
           }
           .logo {
-            font-size: 28px;
-            font-weight: bold;
-            background: linear-gradient(135deg, #D4AF37 0%, #C8963E 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+            display: inline-block;
+            max-width: 200px;
+            height: auto;
           }
           .success-icon {
             font-size: 48px;
@@ -301,7 +311,9 @@ export const sendPasswordChangeConfirmation = async (
       <body>
         <div class="container">
           <div class="header">
-            <div class="logo">ROYAL DANSITY</div>
+            <a href="${frontendUrl}" style="text-decoration: none; display: inline-block;">
+              <img src="${logoUrl}" alt="Royal Dansity Investments International" class="logo" style="max-width: 200px; height: auto;" />
+            </a>
           </div>
           
           <div class="success-icon">✅</div>

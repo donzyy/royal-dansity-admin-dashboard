@@ -12,9 +12,9 @@ import { findOrphanedFiles, deleteFiles, extractFilePath } from '../utils/fileCl
  * Run with: npm run cleanup
  */
 
-async function cleanupOrphanedFiles() {
+export async function cleanupOrphanedFiles() {
   try {
-    console.log('\n🧹 Starting orphaned files cleanup...\n');
+    logger.info('Starting orphaned files cleanup...');
     
     // Connect to database
     await connectDB();
@@ -23,7 +23,6 @@ async function cleanupOrphanedFiles() {
     const usedPaths: string[] = [];
     
     // 1. Get all article images
-    console.log('📰 Checking articles...');
     const articles = await Article.find({}, 'image additionalImages');
     articles.forEach(article => {
       if (article.image) {
@@ -37,11 +36,8 @@ async function cleanupOrphanedFiles() {
         });
       }
     });
-    console.log(`   Found ${usedPaths.length} article images`);
     
     // 2. Get all carousel images
-    console.log('🎠 Checking carousel slides...');
-    const carouselCount = usedPaths.length;
     const slides = await CarouselSlide.find({}, 'image');
     slides.forEach(slide => {
       if (slide.image) {
@@ -49,11 +45,8 @@ async function cleanupOrphanedFiles() {
         if (path) usedPaths.push(path);
       }
     });
-    console.log(`   Found ${usedPaths.length - carouselCount} carousel images`);
     
     // 3. Get all user avatars
-    console.log('👤 Checking user avatars...');
-    const userCount = usedPaths.length;
     const users = await User.find({}, 'avatar');
     users.forEach(user => {
       if (user.avatar) {
@@ -61,25 +54,43 @@ async function cleanupOrphanedFiles() {
         if (path) usedPaths.push(path);
       }
     });
-    console.log(`   Found ${usedPaths.length - userCount} user avatars`);
     
-    console.log(`\n📊 Total images in database: ${usedPaths.length}`);
+    logger.info(`Total images in database: ${usedPaths.length}`);
     
     // 4. Find orphaned files
-    console.log('\n🔍 Scanning filesystem for orphaned files...');
     const orphanedFiles = await findOrphanedFiles(usedPaths);
     
     if (orphanedFiles.length === 0) {
+      logger.info('No orphaned files found! Filesystem is clean.');
+      return { deleted: 0, found: 0 };
+    }
+    
+    logger.info(`Found ${orphanedFiles.length} orphaned files`);
+    
+    // 5. Delete orphaned files (automatic for cron job)
+    const deletedCount = deleteFiles(orphanedFiles);
+    logger.info(`Cleanup complete! Deleted ${deletedCount} files.`);
+    
+    return { deleted: deletedCount, found: orphanedFiles.length };
+    
+  } catch (error) {
+    logger.error('Error during cleanup:', error);
+    throw error;
+  }
+}
+
+async function cleanupOrphanedFilesCLI() {
+  try {
+    console.log('\n🧹 Starting orphaned files cleanup...\n');
+    
+    const result = await cleanupOrphanedFiles();
+    
+    if (result.found === 0) {
       console.log('\n✅ No orphaned files found! Filesystem is clean.\n');
       process.exit(0);
     }
     
-    console.log(`\n⚠️  Found ${orphanedFiles.length} orphaned files:\n`);
-    orphanedFiles.forEach((file, index) => {
-      console.log(`   ${index + 1}. ${file}`);
-    });
-    
-    // 5. Prompt user for confirmation
+    console.log(`\n⚠️  Found ${result.found} orphaned files`);
     console.log('\n❓ Do you want to delete these files? (yes/no)');
     console.log('   Type "yes" to proceed with deletion...\n');
     
@@ -92,9 +103,8 @@ async function cleanupOrphanedFiles() {
       
       if (answer === 'yes' || answer === 'y') {
         console.log('\n🗑️  Deleting orphaned files...\n');
-        const deletedCount = deleteFiles(orphanedFiles);
+        const deletedCount = result.deleted;
         console.log(`\n✅ Cleanup complete! Deleted ${deletedCount} files.\n`);
-        logger.info(`Cleanup: Deleted ${deletedCount} orphaned files`);
         process.exit(0);
       } else {
         console.log('\n❌ Cleanup cancelled. No files were deleted.\n');
@@ -109,6 +119,8 @@ async function cleanupOrphanedFiles() {
   }
 }
 
-// Run the cleanup
-cleanupOrphanedFiles();
+// Run the cleanup if called directly (CLI mode)
+if (import.meta.url.endsWith(process.argv[1]) || process.argv[1]?.includes('cleanupOrphanedFiles')) {
+  cleanupOrphanedFilesCLI();
+}
 

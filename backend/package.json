@@ -12,6 +12,7 @@
     "seed:permissions": "tsx src/scripts/seedPermissions.ts",
     "seed:roles": "tsx src/scripts/seedRoles.ts",
     "cleanup": "tsx src/scripts/cleanupOrphanedFiles.ts",
+    "test:email": "tsx src/scripts/test-email.ts",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
@@ -41,6 +42,7 @@
     "@types/jsonwebtoken": "^9.0.10",
     "@types/morgan": "^1.9.9",
     "@types/node": "^24.2.1",
+    "@types/node-cron": "^3.0.11",
     "@types/swagger-jsdoc": "^6.0.4",
     "@types/swagger-ui-express": "^4.1.6",
     "tsx": "^4.20.3",
