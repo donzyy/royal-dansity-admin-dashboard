@@ -2,7 +2,7 @@
   "name": "royal-dansity-backend",
   "version": "1.0.0",
   "description": "Royal Dansity Backend API",
-  "type": "module",
+  "type": "commonjs",
   "main": "dist/index.js",
   "scripts": {
     "dev": "tsx watch src/index.ts",
