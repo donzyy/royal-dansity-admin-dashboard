@@ -89,11 +89,10 @@ const corsOptions: cors.CorsOptions = {
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   optionsSuccessStatus: 204,
+  preflightContinue: false,
 };
 
-// Preflight for all routes (Express 5 path-to-regexp requires a valid pattern)
-app.options('(.*)', cors(corsOptions));
-// CORS
+// CORS middleware (handles preflight automatically)
 app.use(cors(corsOptions));
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
