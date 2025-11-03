@@ -3,10 +3,10 @@
  * Manages backend and frontend processes on Windows Server
  * 
  * Usage:
- *   pm2 start ecosystem.config.js          # Start all apps
- *   pm2 stop ecosystem.config.js           # Stop all apps
- *   pm2 restart ecosystem.config.js        # Restart all apps
- *   pm2 delete ecosystem.config.js         # Delete all apps
+ *   pm2 start ecosystem.config.cjs          # Start all apps
+ *   pm2 stop ecosystem.config.cjs          # Stop all apps
+ *   pm2 restart ecosystem.config.cjs       # Restart all apps
+ *   pm2 delete ecosystem.config.cjs        # Delete all apps
  *   pm2 logs                               # View logs
  *   pm2 save                               # Save current process list
  *   pm2 startup                            # Generate startup script
