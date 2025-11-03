@@ -25,7 +25,7 @@ jobs:
         run: npm install
       
       - name: Install backend dependencies
-        run: cd backend && npm ci
+        run: cd backend && npm install
       
       - name: Type check root
         run: npm run typecheck
@@ -52,7 +52,7 @@ jobs:
         run: npm install
       
       - name: Install backend dependencies
-        run: cd backend && npm ci
+        run: cd backend && npm install
       
       - name: Run backend tests
         run: cd backend && npm test -- --coverage
@@ -102,7 +102,7 @@ jobs:
         run: npm install
       
       - name: Install backend dependencies
-        run: cd backend && npm ci
+        run: cd backend && npm install
       
       - name: Build backend
         run: cd backend && npm run build
