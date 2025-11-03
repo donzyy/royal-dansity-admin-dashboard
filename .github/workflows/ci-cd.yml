@@ -21,12 +21,13 @@ jobs:
         with:
           node-version: '20'
           cache: 'npm'
+          cache-dependency-path: package-lock.json
       
       - name: Install dependencies
-        run: npm install
+        run: npm ci
       
       - name: Install backend dependencies
-        run: cd backend && npm install
+        run: cd backend && npm ci
       
       - name: Type check root
         run: npm run typecheck
@@ -49,12 +50,13 @@ jobs:
         with:
           node-version: '20'
           cache: 'npm'
+          cache-dependency-path: package-lock.json
       
       - name: Install dependencies
-        run: npm install
+        run: npm ci
       
       - name: Install backend dependencies
-        run: cd backend && npm install
+        run: cd backend && npm ci
       
       - name: Run backend tests
         run: cd backend && npm test -- --coverage
@@ -79,9 +81,10 @@ jobs:
         with:
           node-version: '20'
           cache: 'npm'
+          cache-dependency-path: package-lock.json
       
       - name: Install dependencies
-        run: npm install
+        run: npm ci
       
       - name: Run frontend tests
         run: npm test
@@ -101,12 +104,13 @@ jobs:
         with:
           node-version: '20'
           cache: 'npm'
+          cache-dependency-path: package-lock.json
       
       - name: Install dependencies
-        run: npm install
+        run: npm ci
       
       - name: Install backend dependencies
-        run: cd backend && npm install
+        run: cd backend && npm ci
       
       - name: Build backend
         run: cd backend && npm run build
