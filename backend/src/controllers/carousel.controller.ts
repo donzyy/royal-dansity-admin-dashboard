@@ -229,7 +229,7 @@ export const deleteCarouselSlide = asyncHandler(
     }
 
     const slideTitle = slide.title;
-    const slideId = slide._id.toString();
+    const slideId = String((slide as any)._id);
     
     // Delete associated image from filesystem
     if (slide.image) {

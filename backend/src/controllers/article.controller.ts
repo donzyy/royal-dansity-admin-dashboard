@@ -238,7 +238,7 @@ export const deleteArticle = asyncHandler(
     }
 
     const articleTitle = article.title;
-    const articleId = article._id.toString();
+    const articleId = String((article as any)._id);
     
     // Delete associated images from filesystem
     const imagesToDelete: string[] = [];

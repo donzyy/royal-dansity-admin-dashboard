@@ -5,24 +5,24 @@ import { Server as SocketIOServer } from 'socket.io';
 import cors from "cors";
 import morgan from "morgan";
 import swaggerUi from "swagger-ui-express";
-import connectDB from "./config/database";
-import { swaggerSpec } from "./config/swagger";
-import { logger } from "./utils/logger";
-import { errorHandler, notFound } from "./middleware/errorHandler";
-import { apiLimiter } from "./middleware/rateLimit";
+import connectDB from "./config/database.js";
+import { swaggerSpec } from "./config/swagger.js";
+import { logger } from "./utils/logger.js";
+import { errorHandler, notFound } from "./middleware/errorHandler.js";
+import { apiLimiter } from "./middleware/rateLimit.js";
 
 // Import routes
-import authRoutes from "./routes/auth.routes";
-import articleRoutes from "./routes/article.routes";
-import messageRoutes from "./routes/message.routes";
-import userRoutes from "./routes/user.routes";
-import carouselRoutes from "./routes/carousel.routes";
-import activityRoutes from "./routes/activity.routes";
-import analyticsRoutes from "./routes/analytics.routes";
-import uploadRoutes from "./routes/upload.routes";
-import categoryRoutes from "./routes/category.routes";
-import notificationRoutes from "./routes/notification.routes";
-import roleRoutes from "./routes/role.routes";
+import authRoutes from "./routes/auth.routes.js";
+import articleRoutes from "./routes/article.routes.js";
+import messageRoutes from "./routes/message.routes.js";
+import userRoutes from "./routes/user.routes.js";
+import carouselRoutes from "./routes/carousel.routes.js";
+import activityRoutes from "./routes/activity.routes.js";
+import analyticsRoutes from "./routes/analytics.routes.js";
+import uploadRoutes from "./routes/upload.routes.js";
+import categoryRoutes from "./routes/category.routes.js";
+import notificationRoutes from "./routes/notification.routes.js";
+import roleRoutes from "./routes/role.routes.js";
 
 /**
  * Initialize Express Application
@@ -63,7 +63,7 @@ connectDB();
  * Initialize Cron Jobs
  */
 if (process.env.NODE_ENV === 'production' || process.env.ENABLE_CRON_JOBS === 'true') {
-  import('./jobs/scheduler').catch((error) => {
+  import('./jobs/scheduler.js').catch((error) => {
     logger.error('Failed to load cron jobs:', error);
   });
 }

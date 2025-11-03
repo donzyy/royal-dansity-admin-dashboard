@@ -193,7 +193,7 @@ export const deleteUser = asyncHandler(
     }
 
     // Don't allow user to delete themselves
-    if (user._id.toString() === req.user?._id) {
+    if (String((user as any)._id) === req.user?._id) {
       return next(new AppError('You cannot delete your own account', 400));
     }
 

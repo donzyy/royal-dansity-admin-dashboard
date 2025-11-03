@@ -77,17 +77,7 @@ export const sendEmail = async (options: EmailOptions): Promise<boolean> => {
     };
 
     const info = await transporter.sendMail(mailOptions);
-
-    // If using streamTransport (console logging)
-    if (info.message) {
-      logger.info('=== EMAIL SENT (Console Mode) ===');
-      logger.info(`To: ${options.to}`);
-      logger.info(`Subject: ${options.subject}`);
-      logger.info(`Body:\n${info.message.toString()}`);
-      logger.info('=================================');
-    } else {
-      logger.info(`Email sent to ${options.to}: ${info.messageId}`);
-    }
+    logger.info(`Email sent to ${options.to}: ${info.messageId}`);
 
     return true;
   } catch (error) {

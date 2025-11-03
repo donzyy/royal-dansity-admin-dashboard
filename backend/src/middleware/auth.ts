@@ -54,7 +54,7 @@ export const protect = async (
     // Attach user to request
     req.user = {
       ...decoded,
-      _id: user._id.toString(),
+      _id: String((user as any)._id),
     };
 
     next();
@@ -175,7 +175,7 @@ export const optionalAuth = async (
       if (user && user.status === 'active') {
         req.user = {
           ...decoded,
-          _id: user._id.toString(),
+          _id: String((user as any)._id),
         };
       }
     }
