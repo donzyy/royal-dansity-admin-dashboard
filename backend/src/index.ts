@@ -91,8 +91,8 @@ const corsOptions: cors.CorsOptions = {
   optionsSuccessStatus: 204,
 };
 
-// Preflight
-app.options('*', cors(corsOptions));
+// Preflight for all routes (Express 5 path-to-regexp requires a valid pattern)
+app.options('(.*)', cors(corsOptions));
 // CORS
 app.use(cors(corsOptions));
 app.use(express.json({ limit: '10mb' }));
