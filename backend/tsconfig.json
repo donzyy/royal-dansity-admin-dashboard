@@ -19,6 +19,8 @@
     "node_modules",
     "dist",
     "src/__tests__/**",
-    "src/node-build.ts"
+    "src/node-build.ts",
+    "src/jobs/**",
+    "src/scripts/cleanupOrphanedFiles.ts"
   ]
 }
