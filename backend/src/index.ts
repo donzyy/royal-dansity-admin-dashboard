@@ -80,28 +80,25 @@ const corsOrigins = process.env.CORS_ORIGIN
   : ['http://localhost:5173'];
 
 const corsOptions: cors.CorsOptions = {
-  origin: corsOrigins,
+  origin: (origin, callback) => {
+    // Allow requests with no origin (e.g., mobile apps, curl, Postman)
+    if (!origin) return callback(null, true);
+    
+    if (corsOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+    
+    // Log blocked origin for debugging
+    logger.warn(`CORS blocked origin: ${origin}`);
+    return callback(new Error(`CORS blocked for origin: ${origin}`));
+  },
   credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  optionsSuccessStatus: 204,
 };
 
-// Manual preflight handler to avoid path-to-regexp issues and ensure headers on OPTIONS
-const allowedOrigins = corsOrigins;
-app.use((req, res, next) => {
-  const origin = req.headers.origin as string | undefined;
-  if (origin && allowedOrigins.includes(origin)) {
-    res.header('Access-Control-Allow-Origin', origin);
-    res.header('Vary', 'Origin');
-  }
-  res.header('Access-Control-Allow-Credentials', 'true');
-  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-  res.header('Access-Control-Allow-Methods', 'GET,POST,PUT,PATCH,DELETE,OPTIONS');
-  if (req.method === 'OPTIONS') {
-    return res.sendStatus(204);
-  }
-  next();
-});
-
-// CORS middleware (kept for safety)
+// CORS middleware (handles preflight automatically)
 app.use(cors(corsOptions));
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
