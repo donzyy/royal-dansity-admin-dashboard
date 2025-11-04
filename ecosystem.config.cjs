@@ -24,6 +24,7 @@ module.exports = {
       max_memory_restart: '1G',
       env: {
         NODE_ENV: 'production',
+        CORS_ORIGIN: 'https://royaldansityinvestments.com.gh,https://www.royaldansityinvestments.com.gh,https://api.royaldansityinvestments.com.gh',
       },
       env_development: {
         NODE_ENV: 'development',
