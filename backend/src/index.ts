@@ -76,20 +76,28 @@ app.set('trust proxy', 1);
 
 // Parse CORS_ORIGIN - can be comma-separated or single value
 const corsOrigins = process.env.CORS_ORIGIN 
-  ? process.env.CORS_ORIGIN.split(',').map(origin => origin.trim())
+  ? process.env.CORS_ORIGIN.split(',').map(origin => origin.trim().toLowerCase())
   : ['http://localhost:5173'];
+
+// Log loaded CORS origins for debugging
+logger.info(`CORS Origins loaded: ${JSON.stringify(corsOrigins)}`);
+logger.info(`CORS_ORIGIN env var: ${process.env.CORS_ORIGIN || 'NOT SET'}`);
 
 const corsOptions: cors.CorsOptions = {
   origin: (origin, callback) => {
     // Allow requests with no origin (e.g., mobile apps, curl, Postman)
     if (!origin) return callback(null, true);
     
-    if (corsOrigins.includes(origin)) {
+    // Normalize origin for comparison (lowercase, trim)
+    const normalizedOrigin = origin.trim().toLowerCase();
+    
+    if (corsOrigins.includes(normalizedOrigin)) {
       return callback(null, true);
     }
     
     // Log blocked origin for debugging
-    logger.warn(`CORS blocked origin: ${origin}`);
+    logger.warn(`CORS blocked origin: ${origin} (normalized: ${normalizedOrigin})`);
+    logger.warn(`Allowed origins: ${JSON.stringify(corsOrigins)}`);
     return callback(new Error(`CORS blocked for origin: ${origin}`));
   },
   credentials: true,
