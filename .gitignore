@@ -73,3 +73,7 @@ yarn.lock
 
 # Local development
 .vscode/settings.json
+
+# PM2 runtime dirs (server-side)
+pm2/
+.pm2/
