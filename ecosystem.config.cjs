@@ -16,8 +16,8 @@ module.exports = {
   apps: [
     {
       name: 'royaldansity-api',
-      script: './backend/dist/index.js',
-      cwd: './',
+      script: 'C:/Users/Administrator/Desktop/royaldansityinvestments/royal-dansity-admin-dashboard/backend/dist/index.js',
+      cwd: 'C:/Users/Administrator/Desktop/royaldansityinvestments/royal-dansity-admin-dashboard',
       instances: 1,
       exec_mode: 'fork',
       watch: false,
@@ -29,9 +29,9 @@ module.exports = {
       env_development: {
         NODE_ENV: 'development',
       },
-      error_file: './logs/pm2-api-error.log',
-      out_file: './logs/pm2-api-out.log',
-      log_file: './logs/pm2-combined.log',
+      error_file: 'C:/Users/Administrator/Desktop/royaldansityinvestments/royal-dansity-admin-dashboard/logs/pm2-api-error.log',
+      out_file: 'C:/Users/Administrator/Desktop/royaldansityinvestments/royal-dansity-admin-dashboard/logs/pm2-api-out.log',
+      log_file: 'C:/Users/Administrator/Desktop/royaldansityinvestments/royal-dansity-admin-dashboard/logs/pm2-combined.log',
       time: true,
       merge_logs: true,
       autorestart: true,
